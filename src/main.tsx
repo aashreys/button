@@ -1,66 +1,133 @@
 /** @jsx figma.widget.h */
 
-import { once, showUI } from '@create-figma-plugin/utilities'
-
 const { widget } = figma
-const { AutoLayout, Text, useSyncedState, usePropertyMenu } = widget
+const { AutoLayout, Text, useSyncedState, usePropertyMenu, Input } = widget
+
+const enum UiState { VISIBLE, HIDDEN }
+
+const INPUT_PROPS_DEFAULT = {
+  fill: "#F6ECFF",
+  stroke: "#9B51E0",
+  cornerRadius: 16,
+  padding: 20,
+}
+
+const INPUT_TEXT_COLOR_DEFAULT = '#583777'
 
 export default function () {
   widget.register(Button)
 }
 
-function Button () {
-  const [text, setText] = useSyncedState('text', 'Hello\nWidgets')
-  const items: Array<WidgetPropertyMenuItem> = [
-    {
-      itemType: 'action',
-      propertyName: 'edit',
-      tooltip: 'Edit'
-    }
-  ]
-  async function onChange ({
-    propertyName
-  }: WidgetPropertyEvent): Promise<void> {
-    await new Promise<void>(function (resolve: () => void): void {
-      if (propertyName === 'edit') {
-        showUI({ width: 240, height: 144 }, { text })
-        once('UPDATE_TEXT', function (text: string): void {
-          setText(text)
-          resolve()
-        })
-      }
+function Button() {
+  const placeholderLabel = 'I\'m a Button :)'
+  const [url, setUrl] = useSyncedState('url', '')
+  const [label, setLabel] = useSyncedState('label', '')
+  const [editUiState, setEditUiState] = useSyncedState('editUiState', UiState.VISIBLE)
+
+  function updateButton(newLabel: string, newUrl: string) {
+    if (newLabel.length === 0) newLabel = label
+    setLabel(newLabel)
+    setUrl(newUrl)
+  }
+
+  function openUrl() {
+    return new Promise(() => {
+      const openLinkUIString = `<script>window.open('${url}','_blank');</script>`
+      figma.showUI(openLinkUIString, { visible: false })
+      setTimeout(figma.closePlugin, 100)
     })
   }
-  usePropertyMenu(items, onChange)
+
+  if (editUiState === UiState.HIDDEN) {
+    usePropertyMenu(
+      [
+        {
+          itemType: 'action',
+          tooltip: 'Edit',
+          propertyName: 'edit',
+        }
+      ],
+      () => {setEditUiState(UiState.VISIBLE)},
+    )
+  } else {
+    usePropertyMenu(
+      [
+        {
+          itemType: 'action',
+          tooltip: 'Done',
+          propertyName: 'done',
+        }
+      ],
+      () => {setEditUiState(UiState.HIDDEN)},
+    )
+  }
+
   return (
     <AutoLayout
-      direction='horizontal'
-      horizontalAlignItems='center'
-      verticalAlignItems='center'
-      height='hug-contents'
-      padding={8}
-      fill='#FFFFFF'
-      spacing={12}
-      effect={{
-        type: 'drop-shadow',
-        color: { r: 0, g: 0, b: 0, a: 0.2 },
-        offset: { x: 0, y: 0 },
-        blur: 2,
-        spread: 2
-      }}
+      name="Button"
+      overflow="visible"
+      direction="vertical"
+      spacing={16}
+      horizontalAlignItems="center"
     >
       <AutoLayout
-        direction='vertical'
-        horizontalAlignItems='start'
-        verticalAlignItems='start'
+      name="Config"
+      width={500}
+      overflow="visible"
+      direction="vertical"
+      spacing={4}
+      horizontalAlignItems="center"
+      hidden={editUiState === UiState.HIDDEN}
       >
-        {text.split('\n').map(line => {
-          return line ? (
-            <Text fontSize={12} horizontalAlignText='left' width='fill-parent'>
-              {line}
-            </Text>
-          ) : null
-        })}
+        <Input
+          value={label}
+          placeholder="Type label"
+          onTextEditEnd={(e) => {
+            updateButton(e.characters, url)
+          }}
+          fontSize={24}
+          fill={INPUT_TEXT_COLOR_DEFAULT}
+          width="fill-parent"
+          inputFrameProps={INPUT_PROPS_DEFAULT}
+          inputBehavior="truncate"
+        />
+        <Input
+          value={url}
+          placeholder="Type url"
+          onTextEditEnd={(e) => {
+            updateButton(label, e.characters)
+          }}
+          fontSize={24}
+          fill={INPUT_TEXT_COLOR_DEFAULT}
+          width="fill-parent"
+          inputFrameProps={INPUT_PROPS_DEFAULT}
+          inputBehavior="truncate"
+        />
+      </AutoLayout>
+      <AutoLayout
+        name="Button"
+        fill="#FFF"
+        stroke="#9B51E0"
+        cornerRadius={70}
+        strokeWidth={4}
+        overflow="visible"
+        padding={{
+          vertical: 24,
+          horizontal: 48,
+        }}
+        horizontalAlignItems="center"
+        verticalAlignItems="center"
+        onClick={openUrl}
+      >
+        <Text
+          name="Label"
+          fill="#372944"
+          fontFamily="Inter"
+          fontSize={48}
+          fontWeight={500}
+        >
+          {label.length > 0 ? label : placeholderLabel}
+        </Text>
       </AutoLayout>
     </AutoLayout>
   )
