@@ -2,6 +2,7 @@
 
 const { widget } = figma
 const { AutoLayout, Text, useSyncedState, usePropertyMenu, Input } = widget
+import { getFormattedUrl } from './url_utils'
 
 const enum UiState { VISIBLE, HIDDEN }
 
@@ -27,6 +28,7 @@ function Button() {
   function updateButton(newLabel: string, newUrl: string) {
     if (newLabel.length === 0) newLabel = label
     setLabel(newLabel)
+    newUrl = getFormattedUrl(newUrl)
     setUrl(newUrl)
   }
 
