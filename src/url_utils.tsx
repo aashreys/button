@@ -1,8 +1,6 @@
 export function getFormattedUrl(url: string): string {
-  if (url.indexOf('https://') < 0 && url.indexOf('http://') < 0) {
-    return 'https://' + url
+  if (url.length > 0 && url.indexOf(':') < 0) {
+    url = 'https://' + url
   }
-  else {
-    return url
-  }
+  return url
 }

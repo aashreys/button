@@ -26,15 +26,13 @@ function Button() {
   const [editUiState, setEditUiState] = useSyncedState('editUiState', UiState.VISIBLE)
 
   function updateButton(newLabel: string, newUrl: string) {
-    if (newLabel.length === 0) newLabel = label
     setLabel(newLabel)
-    newUrl = getFormattedUrl(newUrl)
-    setUrl(newUrl)
+    setUrl(getFormattedUrl(newUrl))
   }
 
   function openUrl() {
     return new Promise(() => {
-      const openLinkUIString = `<script>window.open('${url}','_blank');</script>`
+      const openLinkUIString = `<script>window.open('${url}');</script>`
       figma.showUI(openLinkUIString, { visible: false })
       setTimeout(figma.closePlugin, 100)
     })
