@@ -3,17 +3,18 @@
 const { widget } = figma
 const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, Input } = widget
 import { getFormattedUrl } from './url_utils'
+import { Theme, Themes } from './themes'
 
-const enum UiState { VISIBLE, HIDDEN }
-
-const INPUT_PROPS_DEFAULT = {
-  fill: "#F6ECFF",
-  stroke: "#9B51E0",
+const INPUT_FRAME_PROPS = {
+  fill: "#ffffff",
+  stroke: "#757575",
   cornerRadius: 16,
   padding: 20,
 }
 
-const INPUT_TEXT_COLOR_DEFAULT = '#583777'
+const LINK_ICON = `<svg class="svg" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10.232 16.95l1.945-1.945.707.707-1.945 1.945c-1.269 1.27-3.327 1.27-4.596 0-1.27-1.27-1.27-3.327 0-4.596l1.945-1.945.707.707-1.945 1.945c-.878.878-.878 2.303 0 3.182.879.878 2.304.878 3.182 0zm5.48-4.066l-.707-.707 1.945-1.945c.878-.878.878-2.303 0-3.182-.879-.878-2.304-.878-3.182 0l-1.945 1.945-.707-.707 1.945-1.945c1.269-1.27 3.327-1.27 4.596 0 1.27 1.27 1.27 3.327 0 4.596l-1.945 1.945zm-5.45 1.62l4.242-4.242-.766-.766-4.242 4.242.766.766z" fill-rule="nonzero" fill-opacity="1" fill="#fff" stroke="none"></path></svg>`
+
+const enum UiState { VISIBLE, HIDDEN }
 
 export default function () {
   widget.register(Button)
@@ -24,6 +25,7 @@ function Button() {
   const [url, setUrl] = useSyncedState('url', '')
   const [label, setLabel] = useSyncedState('label', '')
   const [editUiState, setEditUiState] = useSyncedState('editUiState', UiState.VISIBLE)
+  const [theme, setTheme] = useSyncedState('theme', Themes.getDefaultTheme())
 
   function updateButton(label: string, url: string) {
     setLabel(label)
@@ -48,13 +50,33 @@ function Button() {
   usePropertyMenu(
     [
       {
+        itemType: 'color-selector',
+        tooltip: 'Select Color',
+        propertyName: 'color',
+        options: Themes.getAllThemes(),
+        selectedOption: theme.option
+      },
+      {
         itemType: 'toggle',
-        tooltip: 'Edit Button',
-        propertyName: 'string',
+        tooltip: 'Change URL',
+        propertyName: 'edit',
         isToggled: editUiState === UiState.VISIBLE,
+        icon: LINK_ICON
       }
+      
+      
     ],
-    () => { setEditUiState(editUiState === UiState.HIDDEN ? UiState.VISIBLE : UiState.HIDDEN) },
+    (event) => { 
+      if (event.propertyName === 'edit') {
+        setEditUiState(editUiState === UiState.HIDDEN ? UiState.VISIBLE : UiState.HIDDEN) 
+      }
+      if (event.propertyName === 'color') {
+        let newTheme: Theme = Themes.getAllThemes().find(
+          element => element.option === event.propertyValue
+        ) as Theme
+        setTheme(newTheme)
+      }
+    },
   )
 
   return (
@@ -81,9 +103,9 @@ function Button() {
             updateButton(e.characters, url)
           }}
           fontSize={24}
-          fill={INPUT_TEXT_COLOR_DEFAULT}
+          fill="#372944"
           width="fill-parent"
-          inputFrameProps={INPUT_PROPS_DEFAULT}
+          inputFrameProps={INPUT_FRAME_PROPS}
           inputBehavior="truncate"
         />
         <Input
@@ -93,16 +115,16 @@ function Button() {
             updateButton(label, e.characters)
           }}
           fontSize={24}
-          fill={INPUT_TEXT_COLOR_DEFAULT}
+          fill="#372944"
           width="fill-parent"
-          inputFrameProps={INPUT_PROPS_DEFAULT}
+          inputFrameProps={INPUT_FRAME_PROPS}
           inputBehavior="truncate"
         />
       </AutoLayout>
       <AutoLayout
         name="Button"
-        fill="#FFF"
-        stroke="#9B51E0"
+        fill="#ffffff"
+        stroke={theme.option}
         cornerRadius={70}
         strokeWidth={4}
         overflow="visible"
