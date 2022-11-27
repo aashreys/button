@@ -30,7 +30,7 @@ function Button() {
     setUrl(getFormattedUrl(url))
   }
 
-  function openUrl() {
+  function openUrl(url: string) {
     return new Promise(() => {
       const openLinkUIString = `<script>window.open('${url}')</script>`
       figma.showUI(openLinkUIString, { visible: false })
@@ -40,29 +40,17 @@ function Button() {
 
   useStickable()
 
-  if (editUiState === UiState.HIDDEN) {
-    usePropertyMenu(
-      [
-        {
-          itemType: 'action',
-          tooltip: 'Edit',
-          propertyName: 'edit',
-        }
-      ],
-      () => {setEditUiState(UiState.VISIBLE)},
-    )
-  } else {
-    usePropertyMenu(
-      [
-        {
-          itemType: 'action',
-          tooltip: 'Done',
-          propertyName: 'done',
-        }
-      ],
-      () => {setEditUiState(UiState.HIDDEN)},
-    )
-  }
+  usePropertyMenu(
+    [
+      {
+        itemType: 'toggle',
+        tooltip: 'Edit Button',
+        propertyName: 'string',
+        isToggled: editUiState === UiState.VISIBLE,
+      }
+    ],
+    () => { setEditUiState(editUiState === UiState.HIDDEN ? UiState.VISIBLE : UiState.HIDDEN) },
+  )
 
   return (
     <AutoLayout
@@ -119,7 +107,7 @@ function Button() {
         }}
         horizontalAlignItems="center"
         verticalAlignItems="center"
-        onClick={openUrl}
+        onClick={() => { openUrl(url) }}
       >
         <Text
           name="Label"
