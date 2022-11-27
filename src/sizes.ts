@@ -6,6 +6,7 @@ export interface Size {
   verticalPadding: number
   cornerRadius: number
   strokeWidth: number
+  shadowDepth: number
 
 }
 
@@ -35,8 +36,9 @@ export module Sizes {
       fontSize: size,
       horizontalPadding: size,
       verticalPadding: size / 2,
-      cornerRadius: 1000,
-      strokeWidth: Math.ceil(size / 8)
+      cornerRadius: Math.ceil(size / 1.5),
+      strokeWidth: Math.ceil(size / 12),
+      shadowDepth: Math.ceil(size / 8)
     }
   }
   

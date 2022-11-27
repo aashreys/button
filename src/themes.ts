@@ -1,89 +1,95 @@
 export interface Theme {
 
   name: string,
-  color: HexCode
+  strokeColor: HexCode,
 
 }
 
 export module Themes {
 
-  const DEFAULT_VIOLET: Theme = {
+  const DEFAULT_PURPLE: Theme = {
+    name: 'Purple',
+    strokeColor: '#7452FF'
+  }
+
+  const VIOLET: Theme = {
     name: 'Violet',
-    color: '#9748ff',
+    strokeColor: '#9748ff',
   }
 
   export function getAllThemes(): Theme[] {
     return [
       {
         name: 'Black',
-        color: '#1e1e1e'
+        strokeColor: '#1e1e1e'
       },
       {
         name: 'Gray',
-        color: '#b3b3b3'
+        strokeColor: '#b3b3b3'
       },
       {
         name: 'Red',
-        color: '#f14722'
+        strokeColor: '#f14722'
       },
       {
         name: 'Orange',
-        color: '#ffa629'
+        strokeColor: '#ffa629'
       },
       {
         name: 'Yellow',
-        color: '#ffcd2a'
+        strokeColor: '#ffcd2a'
       },
       {
         name: 'Green',
-        color: '#13ae5c'
+        strokeColor: '#13ae5c'
       },
       {
         name: 'Blue',
-        color: '#0b99ff'
+        strokeColor: '#0b99ff'
       },
-      DEFAULT_VIOLET,
+      DEFAULT_PURPLE,
+      VIOLET,
       {
         name: 'White',
-        color: '#ffffff'
+        strokeColor: '#ffffff'
       },
       {
         name: 'Dark Gray',
-        color: '#757575'
+        strokeColor: '#757575'
       },
       {
         name: 'Light Gray',
-        color: '#e6e6e6'
+        strokeColor: '#e6e6e6'
       },
       {
         name: 'Light Red',
-        color: '#ffc7c1'
+        strokeColor: '#ffc7c1'
       },
       {
         name: 'Light Orange',
-        color: '#fcd19c'
+        strokeColor: '#fcd19c'
       },
       {
         name: 'Light Yellow',
-        color: '#ffe8a3'
+        strokeColor: '#ffe8a3'
       },
       {
         name: 'Light Green',
-        color: '#aff4c6'
+        strokeColor: '#aff4c6'
       },
       {
         name: 'Light Blue',
-        color: '#bce3ff'
+        strokeColor: '#bce3ff'
       },
       {
         name: 'Light Violet',
-        color: '#e4ccff'
+        strokeColor: '#e4ccff'
       }
     ]
   }
 
   export function getDefaultTheme(): Theme {
-    return DEFAULT_VIOLET
+    return DEFAULT_PURPLE
   }
 
 }

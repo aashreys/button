@@ -59,9 +59,9 @@ function Button() {
         propertyName: 'color',
         options: Themes.getAllThemes().map(theme => { return {
           tooltip: theme.name,
-          option: theme.color
+          option: theme.strokeColor
         }}),
-        selectedOption: theme.color
+        selectedOption: theme.strokeColor
       },
       {
         itemType: 'dropdown',
@@ -90,7 +90,7 @@ function Button() {
       }
       if (event.propertyName === 'color') {
         let theme: Theme = Themes.getAllThemes().find(
-          theme => theme.color === event.propertyValue
+          theme => theme.strokeColor === event.propertyValue
         ) as Theme
         setTheme(theme)
       }
@@ -151,8 +151,15 @@ function Button() {
       </AutoLayout>
       <AutoLayout
         name="Button"
+        effect={{
+          type: "drop-shadow",
+          color: url.length > 0 ? theme.strokeColor : "#d9d9d9",
+          offset: { x: 0, y: size.shadowDepth },
+          blur: 0,
+          showShadowBehindNode: false,
+        }}
         fill="#ffffff"
-        stroke={url.length > 0 ? theme.color : "#d9d9d9"}
+        stroke={url.length > 0 ? theme.strokeColor : "#d9d9d9"}
         cornerRadius={size.cornerRadius}
         strokeWidth={size.strokeWidth}
         overflow="visible"
