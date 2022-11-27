@@ -1,7 +1,7 @@
 /** @jsx figma.widget.h */
 
 const { widget } = figma
-const { AutoLayout, Text, useSyncedState, usePropertyMenu, Input } = widget
+const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, Input } = widget
 import { getFormattedUrl } from './url_utils'
 
 const enum UiState { VISIBLE, HIDDEN }
@@ -25,18 +25,20 @@ function Button() {
   const [label, setLabel] = useSyncedState('label', '')
   const [editUiState, setEditUiState] = useSyncedState('editUiState', UiState.VISIBLE)
 
-  function updateButton(newLabel: string, newUrl: string) {
-    setLabel(newLabel)
-    setUrl(getFormattedUrl(newUrl))
+  function updateButton(label: string, url: string) {
+    setLabel(label)
+    setUrl(getFormattedUrl(url))
   }
 
   function openUrl() {
     return new Promise(() => {
-      const openLinkUIString = `<script>window.open('${url}');</script>`
+      const openLinkUIString = `<script>window.open('${url}')</script>`
       figma.showUI(openLinkUIString, { visible: false })
       setTimeout(figma.closePlugin, 100)
     })
   }
+
+  useStickable()
 
   if (editUiState === UiState.HIDDEN) {
     usePropertyMenu(
