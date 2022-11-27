@@ -17,13 +17,15 @@ export module Sizes {
 
   const SIZE_LARGE: Size = createSize('Large', 48)
 
-  const SIZE_HUGE: Size = createSize('Huge', 64)
+  const SIZE_HUGE: Size = createSize('Extra Large', 64)
 
   const SIZE_TITANIC: Size = createSize('Titanic', 81)
 
-  const SIZE_GARGANTUAN: Size = createSize('Gargantuan', 122)
+  const SIZE_GARGANTUAN: Size = createSize('Gargantuan', 182)
 
-  const SIZE_INTERPLANETARY: Size = createSize('Interplanetary', 182)
+  const SIZE_INTERPLANETARY: Size = createSize('Interplanetary', 410)
+
+  const SIZE_INTERGALACTIC: Size = createSize('Intergalactic', 922)
 
   function createSize(name: string, size: number): Size {
     return {
@@ -32,7 +34,7 @@ export module Sizes {
       horizontalPadding: size,
       verticalPadding: size / 2,
       cornerRadius: 1000,
-      strokeWidth: Math.ceil(size / 12)
+      strokeWidth: Math.ceil(size / 8)
     }
   }
   
@@ -48,7 +50,8 @@ export module Sizes {
       SIZE_HUGE,
       SIZE_TITANIC,
       SIZE_GARGANTUAN,
-      SIZE_INTERPLANETARY
+      SIZE_INTERPLANETARY,
+      SIZE_INTERGALACTIC
     ]
   }
 

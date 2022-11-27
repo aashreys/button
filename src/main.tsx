@@ -9,6 +9,7 @@ import { Size, Sizes } from './sizes'
 const INPUT_FRAME_PROPS = {
   fill: "#ffffff",
   stroke: "#757575",
+  strokeWidth: 2,
   cornerRadius: 16,
   padding: 20,
 }
@@ -22,7 +23,7 @@ export default function () {
 }
 
 function Button() {
-  const placeholderLabel = 'I\'m a Button :)'
+  const placeholderLabel = 'I\'m a Button 😄'
   const [url, setUrl] = useSyncedState('url', '')
   const [label, setLabel] = useSyncedState('label', '')
   const [editUiState, setEditUiState] = useSyncedState('editUiState', UiState.VISIBLE)
@@ -120,25 +121,29 @@ function Button() {
       hidden={editUiState === UiState.HIDDEN}
       >
         <Input
+          name='Label'
           value={label}
+          fontFamily="Inter"
           placeholder="Type label"
           onTextEditEnd={(e) => {
             updateButton(e.characters, url)
           }}
           fontSize={24}
-          fill="#372944"
+          fill="#333333"
           width="fill-parent"
           inputFrameProps={INPUT_FRAME_PROPS}
           inputBehavior="truncate"
         />
         <Input
+          name='URL'
           value={url}
+          fontFamily="Inter"
           placeholder="Type or paste URL"
           onTextEditEnd={(e) => {
             updateButton(label, e.characters)
           }}
           fontSize={24}
-          fill="#372944"
+          fill="#333333"
           width="fill-parent"
           inputFrameProps={INPUT_FRAME_PROPS}
           inputBehavior="truncate"
@@ -147,7 +152,7 @@ function Button() {
       <AutoLayout
         name="Button"
         fill="#ffffff"
-        stroke={theme.color}
+        stroke={url.length > 0 ? theme.color : "#d9d9d9"}
         cornerRadius={size.cornerRadius}
         strokeWidth={size.strokeWidth}
         overflow="visible"
@@ -161,7 +166,7 @@ function Button() {
       >
         <Text
           name="Label"
-          fill="#372944"
+          fill="#333333"
           fontFamily="Inter"
           fontSize={size.fontSize}
           fontWeight={500}
