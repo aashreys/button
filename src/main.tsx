@@ -32,9 +32,14 @@ function Button() {
 
   function openUrl(url: string) {
     return new Promise(() => {
-      const openLinkUIString = `<script>window.open('${url}')</script>`
-      figma.showUI(openLinkUIString, { visible: false })
-      setTimeout(figma.closePlugin, 100)
+      if (url.length > 0) {
+        const openLinkUIString = `<script>window.open('${url}')</script>`
+        figma.showUI(openLinkUIString, { visible: false })
+        setTimeout(figma.closePlugin, 1000)
+      } else {
+        setEditUiState(UiState.VISIBLE)
+        figma.notify('Type or paste a URL to open')
+      }      
     })
   }
 
@@ -83,7 +88,7 @@ function Button() {
         />
         <Input
           value={url}
-          placeholder="Type url"
+          placeholder="Type or paste URL"
           onTextEditEnd={(e) => {
             updateButton(label, e.characters)
           }}
