@@ -11,9 +11,9 @@ export interface Size {
 
 export module Sizes {
 
-  const SIZE_SMALL: Size = createSize('Small', 16)
+  const SIZE_SMALL: Size = createSize('Small', 24)
 
-  const SIZE_MEDIUM: Size = createSize('Medium', 24)
+  const SIZE_MEDIUM: Size = createSize('Medium', 36)
 
   const SIZE_LARGE: Size = createSize('Large', 48)
 
