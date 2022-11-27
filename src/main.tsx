@@ -4,6 +4,7 @@ const { widget } = figma
 const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, Input } = widget
 import { getFormattedUrl } from './url_utils'
 import { Theme, Themes } from './themes'
+import { Size, Sizes } from './sizes'
 
 const INPUT_FRAME_PROPS = {
   fill: "#ffffff",
@@ -26,22 +27,24 @@ function Button() {
   const [label, setLabel] = useSyncedState('label', '')
   const [editUiState, setEditUiState] = useSyncedState('editUiState', UiState.VISIBLE)
   const [theme, setTheme] = useSyncedState('theme', Themes.getDefaultTheme())
+  const [size, setSize] = useSyncedState('size', Sizes.getDefaultSize())
 
   function updateButton(label: string, url: string) {
     setLabel(label)
     setUrl(getFormattedUrl(url))
   }
 
-  function openUrl(url: string) {
+  function openUrl() {
     return new Promise(() => {
       if (url.length > 0) {
-        const openLinkUIString = `<script>window.open('${url}')</script>`
+        const openLinkUIString = `<script>window.open('${url}', '_blank')</script>`
         figma.showUI(openLinkUIString, { visible: false })
-        setTimeout(figma.closePlugin, 1000)
+        setEditUiState(UiState.HIDDEN)
       } else {
         setEditUiState(UiState.VISIBLE)
         figma.notify('Type or paste a URL to open')
-      }      
+      }
+      setTimeout(figma.closePlugin, 1000)
     })
   }
 
@@ -53,8 +56,24 @@ function Button() {
         itemType: 'color-selector',
         tooltip: 'Select Color',
         propertyName: 'color',
-        options: Themes.getAllThemes(),
-        selectedOption: theme.option
+        options: Themes.getAllThemes().map(theme => { return {
+          tooltip: theme.name,
+          option: theme.color
+        }}),
+        selectedOption: theme.color
+      },
+      {
+        itemType: 'dropdown',
+        tooltip: 'Select Size',
+        propertyName: 'size',
+        options: Sizes.getAllSizes().map(size => { return {
+          option: size.name,
+          label: size.name
+        }}),
+        selectedOption: size.name
+      },
+      {
+        itemType: 'separator'
       },
       {
         itemType: 'toggle',
@@ -63,18 +82,22 @@ function Button() {
         isToggled: editUiState === UiState.VISIBLE,
         icon: LINK_ICON
       }
-      
-      
     ],
     (event) => { 
       if (event.propertyName === 'edit') {
         setEditUiState(editUiState === UiState.HIDDEN ? UiState.VISIBLE : UiState.HIDDEN) 
       }
       if (event.propertyName === 'color') {
-        let newTheme: Theme = Themes.getAllThemes().find(
-          element => element.option === event.propertyValue
+        let theme: Theme = Themes.getAllThemes().find(
+          theme => theme.color === event.propertyValue
         ) as Theme
-        setTheme(newTheme)
+        setTheme(theme)
+      }
+      if (event.propertyName === 'size') {
+        let size: Size = Sizes.getAllSizes().find(
+          size => size.name === event.propertyValue
+        ) as Size
+        setSize(size)
       }
     },
   )
@@ -124,23 +147,23 @@ function Button() {
       <AutoLayout
         name="Button"
         fill="#ffffff"
-        stroke={theme.option}
-        cornerRadius={70}
-        strokeWidth={4}
+        stroke={theme.color}
+        cornerRadius={size.cornerRadius}
+        strokeWidth={size.strokeWidth}
         overflow="visible"
         padding={{
-          vertical: 24,
-          horizontal: 48,
+          vertical: size.verticalPadding,
+          horizontal: size.horizontalPadding,
         }}
         horizontalAlignItems="center"
         verticalAlignItems="center"
-        onClick={() => { openUrl(url) }}
+        onClick={openUrl}
       >
         <Text
           name="Label"
           fill="#372944"
           fontFamily="Inter"
-          fontSize={48}
+          fontSize={size.fontSize}
           fontWeight={500}
         >
           {label.length > 0 ? label : placeholderLabel}

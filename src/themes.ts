@@ -1,78 +1,83 @@
-export interface Theme extends WidgetPropertyMenuColorSelectorOption {}
+export interface Theme {
+
+  name: string,
+  color: HexCode
+
+}
 
 export module Themes {
 
   const DEFAULT_VIOLET: Theme = {
-    tooltip: 'Violet',
-    option: '#9748ff',
+    name: 'Violet',
+    color: '#9748ff',
   }
 
   export function getAllThemes(): Theme[] {
     return [
       {
-        tooltip: 'Black',
-        option: '#1e1e1e'
+        name: 'Black',
+        color: '#1e1e1e'
       },
       {
-        tooltip: 'Gray',
-        option: '#b3b3b3'
+        name: 'Gray',
+        color: '#b3b3b3'
       },
       {
-        tooltip: 'Red',
-        option: '#f14722'
+        name: 'Red',
+        color: '#f14722'
       },
       {
-        tooltip: 'Orange',
-        option: '#ffa629'
+        name: 'Orange',
+        color: '#ffa629'
       },
       {
-        tooltip: 'Yellow',
-        option: '#ffcd2a'
+        name: 'Yellow',
+        color: '#ffcd2a'
       },
       {
-        tooltip: 'Green',
-        option: '#13ae5c'
+        name: 'Green',
+        color: '#13ae5c'
       },
       {
-        tooltip: 'Blue',
-        option: '#0b99ff'
+        name: 'Blue',
+        color: '#0b99ff'
       },
       DEFAULT_VIOLET,
       {
-        tooltip: 'White',
-        option: '#ffffff'
+        name: 'White',
+        color: '#ffffff'
       },
       {
-        tooltip: 'Dark Gray',
-        option: '#757575'
+        name: 'Dark Gray',
+        color: '#757575'
       },
       {
-        tooltip: 'Light Gray',
-        option: '#e6e6e6'
+        name: 'Light Gray',
+        color: '#e6e6e6'
       },
       {
-        tooltip: 'Light Red',
-        option: '#ffc7c1'
+        name: 'Light Red',
+        color: '#ffc7c1'
       },
       {
-        tooltip: 'Light Orange',
-        option: '#fcd19c'
+        name: 'Light Orange',
+        color: '#fcd19c'
       },
       {
-        tooltip: 'Light Yellow',
-        option: '#ffe8a3'
+        name: 'Light Yellow',
+        color: '#ffe8a3'
       },
       {
-        tooltip: 'Light Green',
-        option: '#aff4c6'
+        name: 'Light Green',
+        color: '#aff4c6'
       },
       {
-        tooltip: 'Light Blue',
-        option: '#bce3ff'
+        name: 'Light Blue',
+        color: '#bce3ff'
       },
       {
-        tooltip: 'Light Violet',
-        option: '#e4ccff'
+        name: 'Light Violet',
+        color: '#e4ccff'
       }
     ]
   }
