@@ -23,7 +23,6 @@
     "containsWidget": true,
     "id": "button",
     "name": "Button",
-    "main": "src/main.tsx",
-    "ui": "src/ui.tsx"
+    "main": "src/main.tsx"
   }
 }
