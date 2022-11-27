@@ -11,13 +11,15 @@ export interface Size {
 
 export module Sizes {
 
+  const SIZE_XS: Size = createSize('Extra Small', 16)
+
   const SIZE_SMALL: Size = createSize('Small', 24)
 
   const SIZE_MEDIUM: Size = createSize('Medium', 36)
 
   const SIZE_LARGE: Size = createSize('Large', 48)
 
-  const SIZE_HUGE: Size = createSize('Extra Large', 64)
+  const SIZE_XL: Size = createSize('Extra Large', 64)
 
   const SIZE_TITANIC: Size = createSize('Titanic', 81)
 
@@ -44,10 +46,11 @@ export module Sizes {
 
   export function getAllSizes(): Size[] {
     return [
+      SIZE_XS,
       SIZE_SMALL,
       SIZE_MEDIUM,
       SIZE_LARGE,
-      SIZE_HUGE,
+      SIZE_XL,
       SIZE_TITANIC,
       SIZE_GARGANTUAN,
       SIZE_INTERPLANETARY,
