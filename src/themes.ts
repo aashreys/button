@@ -30,7 +30,7 @@ export module Themes {
 
   const ORANGE = createTheme('Orange', '#ffa629', '#333333', '#ffffff')
 
-  const YELLOW = createTheme('Yellow', '#ffcd2a', '#333333', '#ffffff')
+  const YELLOW = createTheme('Yellow', '#ffcd2a', '#333333', '#333333')
 
   const GREEN = createTheme('Green', '#13ae5c', '#333333', '#ffffff')
 
