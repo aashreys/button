@@ -23,7 +23,7 @@ export default function () {
 }
 
 function Button() {
-  const placeholderLabel = 'I\'m a Button 😄'
+  const placeholderLabel = 'Button ->'
   const [url, setUrl] = useSyncedState('url', '')
   const [label, setLabel] = useSyncedState('label', '')
   const [editUiState, setEditUiState] = useSyncedState('editUiState', UiState.VISIBLE)
@@ -35,9 +35,13 @@ function Button() {
     setUrl(getFormattedUrl(url))
   }
 
+  function isUrlSet(): boolean {
+    return url.length > 0
+  }
+
   function openUrl() {
     return new Promise(() => {
-      if (url.length > 0) {
+      if (isUrlSet()) {
         const openLinkUIString = `<script>window.open('${url}', '_blank')</script>`
         figma.showUI(openLinkUIString, { visible: false })
         setEditUiState(UiState.HIDDEN)
@@ -45,7 +49,7 @@ function Button() {
         setEditUiState(UiState.VISIBLE)
         figma.notify('Type or paste a URL to open')
       }
-      setTimeout(figma.closePlugin, 1000)
+      setTimeout(figma.closePlugin, 100)
     })
   }
 
@@ -59,9 +63,9 @@ function Button() {
         propertyName: 'color',
         options: Themes.getAllThemes().map(theme => { return {
           tooltip: theme.name,
-          option: theme.strokeColor
+          option: theme.primaryColor
         }}),
-        selectedOption: theme.strokeColor
+        selectedOption: theme.primaryColor
       },
       {
         itemType: 'dropdown',
@@ -90,7 +94,7 @@ function Button() {
       }
       if (event.propertyName === 'color') {
         let theme: Theme = Themes.getAllThemes().find(
-          theme => theme.strokeColor === event.propertyValue
+          theme => theme.primaryColor === event.propertyValue
         ) as Theme
         setTheme(theme)
       }
@@ -109,6 +113,9 @@ function Button() {
       overflow="visible"
       direction="vertical"
       spacing={16}
+      padding={{
+        bottom: size.shadowDepth
+      }}
       horizontalAlignItems="center"
     >
       <AutoLayout
@@ -153,13 +160,16 @@ function Button() {
         name="Button"
         effect={{
           type: "drop-shadow",
-          color: url.length > 0 ? theme.strokeColor : "#d9d9d9",
+          color: isUrlSet() ? theme.primaryColor : "#d9d9d9",
           offset: { x: 0, y: size.shadowDepth },
           blur: 0,
           showShadowBehindNode: false,
         }}
         fill="#ffffff"
-        stroke={url.length > 0 ? theme.strokeColor : "#d9d9d9"}
+        hoverStyle={isUrlSet() ? {
+          fill: theme.primaryColor
+        } : {}}
+        stroke={isUrlSet() ? theme.primaryColor : "#d9d9d9"}
         cornerRadius={size.cornerRadius}
         strokeWidth={size.strokeWidth}
         overflow="visible"
@@ -173,7 +183,10 @@ function Button() {
       >
         <Text
           name="Label"
-          fill="#333333"
+          fill={theme.textColor}
+          hoverStyle={isUrlSet() ? {
+            fill: theme.hoverTextColor
+          } : {}}
           fontFamily="Inter"
           fontSize={size.fontSize}
           fontWeight={500}

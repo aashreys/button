@@ -1,95 +1,88 @@
 export interface Theme {
 
   name: string,
-  strokeColor: HexCode,
+  primaryColor: HexCode,
+  textColor: HexCode,
+  hoverTextColor: HexCode
 
 }
 
 export module Themes {
 
-  const DEFAULT_PURPLE: Theme = {
-    name: 'Purple',
-    strokeColor: '#7452FF'
+  function createTheme(
+    name: string, 
+    primaryColor: HexCode, 
+    textColor: HexCode,  
+    hoverTextColor: HexCode): Theme {
+      return {
+        name: name,
+        primaryColor: primaryColor,
+        textColor: textColor,
+        hoverTextColor: hoverTextColor
+      }
   }
 
-  const VIOLET: Theme = {
-    name: 'Violet',
-    strokeColor: '#9748ff',
-  }
+  const BLACK = createTheme('Black', '#1e1e1e', '#333333', '#ffffff')
+
+  const GRAY = createTheme('Gray', '#b3b3b3', '#333333', '#ffffff')
+
+  const RED = createTheme('Red', '#f14722', '#333333', '#ffffff')
+
+  const ORANGE = createTheme('Orange', '#ffa629', '#333333', '#ffffff')
+
+  const YELLOW = createTheme('Yellow', '#ffcd2a', '#333333', '#ffffff')
+
+  const GREEN = createTheme('Green', '#13ae5c', '#333333', '#ffffff')
+
+  const BLUE = createTheme('Blue', '#0b99ff', '#333333', '#ffffff')
+
+  const VIOLET = createTheme('Violet', '#9748ff', '#333333', '#ffffff')
+
+  const PURPLE = createTheme('Purple', '#7452FF', '#333333', '#ffffff')
+
+  const WHITE = createTheme('White', '#ffffff', '#333333', '#333333')
+
+  const DARK_GRAY = createTheme('Dark Gray', '#757575', '#333333', '#ffffff')
+
+  const LIGHT_GRAY = createTheme('Light Gray', '#e6e6e6', '#333333', '#333333')
+
+  const LIGHT_RED = createTheme('Light Red', '#ffc7c1', '#333333', '#333333')
+
+  const LIGHT_ORANGE = createTheme('Light Orange', '#fcd19c', '#333333', '#333333')
+
+  const LIGHT_YELLOW = createTheme('Light Yellow', '#ffe8a3', '#333333', '#333333')
+
+  const LIGHT_GREEN = createTheme('Light Green', '#aff4c6', '#333333', '#333333')
+
+  const LIGHT_BLUE = createTheme('Light Blue', '#bce3ff', '#333333', '#333333')
+
+  const LIGHT_VIOLET = createTheme('Light Violet', '#e4ccff', '#333333', '#333333')
 
   export function getAllThemes(): Theme[] {
     return [
-      {
-        name: 'Black',
-        strokeColor: '#1e1e1e'
-      },
-      {
-        name: 'Gray',
-        strokeColor: '#b3b3b3'
-      },
-      {
-        name: 'Red',
-        strokeColor: '#f14722'
-      },
-      {
-        name: 'Orange',
-        strokeColor: '#ffa629'
-      },
-      {
-        name: 'Yellow',
-        strokeColor: '#ffcd2a'
-      },
-      {
-        name: 'Green',
-        strokeColor: '#13ae5c'
-      },
-      {
-        name: 'Blue',
-        strokeColor: '#0b99ff'
-      },
-      DEFAULT_PURPLE,
+      BLACK,
+      GRAY,
+      RED,
+      ORANGE,
+      YELLOW,
+      GREEN,
+      BLUE,
       VIOLET,
-      {
-        name: 'White',
-        strokeColor: '#ffffff'
-      },
-      {
-        name: 'Dark Gray',
-        strokeColor: '#757575'
-      },
-      {
-        name: 'Light Gray',
-        strokeColor: '#e6e6e6'
-      },
-      {
-        name: 'Light Red',
-        strokeColor: '#ffc7c1'
-      },
-      {
-        name: 'Light Orange',
-        strokeColor: '#fcd19c'
-      },
-      {
-        name: 'Light Yellow',
-        strokeColor: '#ffe8a3'
-      },
-      {
-        name: 'Light Green',
-        strokeColor: '#aff4c6'
-      },
-      {
-        name: 'Light Blue',
-        strokeColor: '#bce3ff'
-      },
-      {
-        name: 'Light Violet',
-        strokeColor: '#e4ccff'
-      }
+      PURPLE,
+      WHITE,
+      DARK_GRAY,
+      LIGHT_GRAY,
+      LIGHT_RED,
+      LIGHT_ORANGE,
+      LIGHT_YELLOW,
+      LIGHT_GREEN,
+      LIGHT_BLUE,
+      LIGHT_VIOLET
     ]
   }
 
   export function getDefaultTheme(): Theme {
-    return DEFAULT_PURPLE
+    return VIOLET
   }
 
 }
