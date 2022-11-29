@@ -7,7 +7,7 @@ export function getFormattedUrl(url: string): string {
   return url
 }
 
-export function isSameFile(url: string): boolean {
+export function isThisFile(url: string): boolean {
   let formattedFilename = encodeURI(figma.root.name).replace(/%20/g, '-')
   return url.includes('figma.com') && url.includes(formattedFilename)
 }
@@ -27,16 +27,12 @@ export function getNodeIdFromUrl(url: string): string | null {
   }
 }
 
-export function getPageOfNode(node: BaseNode): PageNode {
+export function getParentPage(node: SceneNode | PageNode): PageNode {
   let page
   let currentNode = node
   while (!page) {
-    if (currentNode.type === 'PAGE') {
-      page = currentNode
-    }
-    else {
-      currentNode = currentNode.parent as (BaseNode & ChildrenMixin)
-    }
+    if (currentNode.type === 'PAGE') page = currentNode
+    else currentNode = currentNode.parent as (SceneNode | PageNode)
   }
   return page
 }
@@ -83,8 +79,6 @@ export async function smoothScrollToNode(node: SceneNode, time: number): Promise
       setTimeout(() => { animateViewport() }, intervalMs)
     }
   )
-  
-  
 }
 
 function lerp(a: number, b: number, t: number) {

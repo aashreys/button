@@ -2,7 +2,7 @@
 
 const { widget } = figma
 const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, Input } = widget
-import { getFormattedUrl, getNodeIdFromUrl, getPageOfNode, isSameFile, smoothScrollToNode as smoothScroll } from './utils'
+import { getFormattedUrl, getNodeIdFromUrl, getParentPage as getPage, isThisFile, smoothScrollToNode as smoothScroll } from './utils'
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
 
@@ -44,8 +44,8 @@ function Button() {
     return new Promise(() => {
       if (isUrlSet()) {
         setEditUiState(UiState.HIDDEN)
-        if (isSameFile(url)) {
-          navigateToFigmaNode(url)
+        if (isThisFile(url)) {
+          navigateToNode(url)
         }
         else {
           openUrl(url)
@@ -61,22 +61,28 @@ function Button() {
   function openUrl(url: string) {
     const openLinkUIString = `<script>window.open('${url}', '_blank')</script>`
     figma.showUI(openLinkUIString, { visible: false })
-    setTimeout(figma.closePlugin, 100)
+    setTimeout(figma.closePlugin, 1000)
   }
 
-  function navigateToFigmaNode(url: string) {
+  function navigateToNode(url: string) {
     let id = getNodeIdFromUrl(url)
     let node = id ? figma.getNodeById(id) : null
 
-    if (node) {
-      let page = getPageOfNode(node)
-      figma.currentPage = page
-      if (node.type !== 'PAGE' && node.type !== 'DOCUMENT') {
-        smoothScroll(node, 500).then(() => { figma.closePlugin() })
-      }
-    } else {
+    if (node?.type === 'PAGE') {
+      figma.currentPage = node
+      figma.closePlugin()
+    }
+
+    if (node?.type !== 'PAGE' && node?.type !== 'DOCUMENT') {
+      figma.currentPage = getPage(node as SceneNode)
+      smoothScroll(node as SceneNode, 250).then(() => {
+        figma.closePlugin()
+      })
+    }
+
+    if (!node) {
       setEditUiState(UiState.VISIBLE)
-      figma.closePlugin('Target layer no longer exists. Please update URL.')
+      figma.closePlugin('Target layer may have been deleted. Please update URL.')
     }
   }
 
@@ -224,5 +230,3 @@ function Button() {
     </AutoLayout>
   )
 }
-
-// https://www.figma.com/file/GQIqlT9vTJH1U4MWlhh13t/2022---Button-Widget-%F0%9F%91%80?node-id=1701%3A431&viewport=431%2C583%2C0.3&t=S1UqMTC1LYBD5gKg-11
