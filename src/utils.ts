@@ -8,8 +8,14 @@ export function getFormattedUrl(url: string): string {
 }
 
 export function isThisFile(url: string): boolean {
-  let formattedFilename = encodeURI(figma.root.name).replace(/%20/g, '-')
-  return url.includes('figma.com') && url.includes(formattedFilename)
+  let formattedFilename = figma.root.name.trim()
+  console.log(formattedFilename)
+  formattedFilename = encodeURIComponent(formattedFilename).replace(/%20/g, '-')
+  let isThisFile = url.includes('figma.com') && url.includes(formattedFilename)
+  // console.log(formattedFilename)
+  // console.log(url)
+  // console.log('Is this file: ' + isThisFile)
+  return isThisFile
 }
 
 export function getNodeIdFromUrl(url: string): string | null {
