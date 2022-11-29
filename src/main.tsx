@@ -2,7 +2,7 @@
 
 const { widget } = figma
 const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, Input } = widget
-import { getFormattedUrl, getNodeIdFromUrl, getParentPage as getPage, isThisFile, smoothScrollToNode as smoothScroll } from './utils'
+import { getFormattedUrl, getNodeIdFromUrl, getParentPage, isThisFile, smoothScrollToNode as smoothScroll } from './utils'
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
 
@@ -74,7 +74,7 @@ function Button() {
     }
 
     if (node?.type !== 'PAGE' && node?.type !== 'DOCUMENT') {
-      figma.currentPage = getPage(node as SceneNode)
+      figma.currentPage = getParentPage(node as SceneNode)
       smoothScroll(node as SceneNode, 250).then(() => {
         figma.closePlugin()
       })
@@ -178,7 +178,7 @@ function Button() {
           name='URL'
           value={url}
           fontFamily="Inter"
-          placeholder="Type or paste URL"
+          placeholder="Type or paste web or layer URL"
           onTextEditEnd={(e) => {
             updateButton(label, e.characters)
           }}
