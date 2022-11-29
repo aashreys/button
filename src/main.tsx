@@ -2,7 +2,7 @@
 
 const { widget } = figma
 const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, Input } = widget
-import { getFormattedUrl } from './url_utils'
+import { containsFigmaNode, getFormattedUrl, getNodeIdFromUrl, getPageOfNode, smoothScrollToNode } from './utils'
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
 
@@ -19,6 +19,7 @@ const LINK_ICON = `<svg class="svg" width="24" height="24" viewBox="0 0 24 24" x
 const enum UiState { VISIBLE, HIDDEN }
 
 export default function () {
+  figma.skipInvisibleInstanceChildren = true
   widget.register(Button)
 }
 
@@ -39,18 +40,42 @@ function Button() {
     return url.length > 0
   }
 
-  function openUrl() {
+  function handleClick() {
     return new Promise(() => {
       if (isUrlSet()) {
-        const openLinkUIString = `<script>window.open('${url}', '_blank')</script>`
-        figma.showUI(openLinkUIString, { visible: false })
-        setEditUiState(UiState.HIDDEN)
-      } else {
-        setEditUiState(UiState.VISIBLE)
-        figma.notify('Type or paste a URL to open')
+        if (containsFigmaNode(url)) {
+          let nodeId = getNodeIdFromUrl(url)
+          navigateToNode(nodeId)
+        }
+        else {
+          openUrl(url)
+        }
       }
-      setTimeout(figma.closePlugin, 100)
+      else {
+        setEditUiState(UiState.VISIBLE)
+        figma.closePlugin('Type or paste a URL to open')
+      }
     })
+  }
+
+  function openUrl(url: string) {
+    const openLinkUIString = `<script>window.open('${url}', '_blank')</script>`
+    figma.showUI(openLinkUIString, { visible: false })
+    setEditUiState(UiState.HIDDEN)
+    setTimeout(figma.closePlugin, 100)
+  }
+
+  function navigateToNode(id: string) {
+    let node = figma.getNodeById(id)
+    if (node) {
+      let page = getPageOfNode(node)
+      figma.currentPage = page
+      if (node.type !== 'PAGE' && node.type !== 'DOCUMENT') {
+        smoothScrollToNode(node, 250).then(
+          () => { figma.closePlugin() }  
+        )
+      }
+    }
   }
 
   useStickable()
@@ -179,7 +204,7 @@ function Button() {
         }}
         horizontalAlignItems="center"
         verticalAlignItems="center"
-        onClick={openUrl}
+        onClick={handleClick}
       >
         <Text
           name="Label"

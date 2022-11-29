@@ -1,3 +1,5 @@
+import { useInitialFocus } from "@create-figma-plugin/ui"
+
 export interface Theme {
 
   name: string,
