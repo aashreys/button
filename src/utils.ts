@@ -1,4 +1,4 @@
-import { getAbsolutePosition, setAbsolutePosition } from "@create-figma-plugin/utilities"
+import { getAbsolutePosition } from "@create-figma-plugin/utilities"
 
 export function getFormattedUrl(url: string): string {
   if (url.length > 0 && url.indexOf(':') < 0) {
@@ -7,22 +7,24 @@ export function getFormattedUrl(url: string): string {
   return url
 }
 
-export function getNodeIdFromUrl(figmaUrl: string): string {
-  figmaUrl = figmaUrl.toLowerCase()
-  let startIndex: number = figmaUrl.indexOf('node-id=') + 8
-  let endIndex: number = figmaUrl.indexOf('&', startIndex)
-  let id = ''
-  if (endIndex > 0) {
-    id = figmaUrl.substring(startIndex, endIndex).replace('%3a', ':')
-  } else {
-    id = figmaUrl.substring(startIndex).replace('%3a', ':')
-  }
-  return id
+export function isSameFile(url: string): boolean {
+  let formattedFilename = encodeURI(figma.root.name).replace(/%20/g, '-')
+  return url.includes('figma.com') && url.includes(formattedFilename)
 }
 
-export function containsFigmaNode(url: string): boolean {
+export function getNodeIdFromUrl(url: string): string | null {
   url = url.toLowerCase()
-  return url.indexOf('figma') > 0 && url.indexOf('node-id=') > 0
+  let startIndex: number = url.indexOf('node-id=') + 8
+  let endIndex: number = url.indexOf('&', startIndex)
+  if (startIndex) {
+    if (endIndex > 0) {
+      return url.substring(startIndex, endIndex).replace('%3a', ':')
+    } else {
+      return url.substring(startIndex).replace('%3a', ':')
+    }
+  } else {
+    return null
+  }
 }
 
 export function getPageOfNode(node: BaseNode): PageNode {
@@ -88,17 +90,3 @@ export async function smoothScrollToNode(node: SceneNode, time: number): Promise
 function lerp(a: number, b: number, t: number) {
   return (1 - t) * a + t * b
 }
-
- 
-
-// Node
-// https://www.figma.com/file/GQIqlT9vTJH1U4MWlhh13t/2022---Button-Widget?node-id=1807%3A5&viewport=660%2C335%2C1.98&t=7E1lbXbv4b7PzMpp-11
-
-// Page
-// https://www.figma.com/file/GQIqlT9vTJH1U4MWlhh13t/2022---Button-Widget?node-id=1701%3A431&viewport=403%2C311%2C0.71&t=7E1lbXbv4b7PzMpp-11
-
-// Widget
-// https://www.figma.com/file/GQIqlT9vTJH1U4MWlhh13t/2022---Button-Widget?node-id=1813%3A2&t=7E1lbXbv4b7PzMpp-4
-
-// 1813:383
-// https://www.figma.com/file/GQIqlT9vTJH1U4MWlhh13t/2022---Button-Widget?node-id=1801%3A12

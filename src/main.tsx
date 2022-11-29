@@ -2,7 +2,7 @@
 
 const { widget } = figma
 const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, Input } = widget
-import { containsFigmaNode, getFormattedUrl, getNodeIdFromUrl, getPageOfNode, smoothScrollToNode } from './utils'
+import { getFormattedUrl, getNodeIdFromUrl, getPageOfNode, isSameFile, smoothScrollToNode as smoothScroll } from './utils'
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
 
@@ -43,9 +43,9 @@ function Button() {
   function handleClick() {
     return new Promise(() => {
       if (isUrlSet()) {
-        if (containsFigmaNode(url)) {
-          let nodeId = getNodeIdFromUrl(url)
-          navigateToNode(nodeId)
+        setEditUiState(UiState.HIDDEN)
+        if (isSameFile(url)) {
+          navigateToFigmaNode(url)
         }
         else {
           openUrl(url)
@@ -61,20 +61,22 @@ function Button() {
   function openUrl(url: string) {
     const openLinkUIString = `<script>window.open('${url}', '_blank')</script>`
     figma.showUI(openLinkUIString, { visible: false })
-    setEditUiState(UiState.HIDDEN)
     setTimeout(figma.closePlugin, 100)
   }
 
-  function navigateToNode(id: string) {
-    let node = figma.getNodeById(id)
+  function navigateToFigmaNode(url: string) {
+    let id = getNodeIdFromUrl(url)
+    let node = id ? figma.getNodeById(id) : null
+
     if (node) {
       let page = getPageOfNode(node)
       figma.currentPage = page
       if (node.type !== 'PAGE' && node.type !== 'DOCUMENT') {
-        smoothScrollToNode(node, 250).then(
-          () => { figma.closePlugin() }  
-        )
+        smoothScroll(node, 500).then(() => { figma.closePlugin() })
       }
+    } else {
+      setEditUiState(UiState.VISIBLE)
+      figma.closePlugin('Target layer no longer exists. Please update URL.')
     }
   }
 
@@ -222,3 +224,5 @@ function Button() {
     </AutoLayout>
   )
 }
+
+// https://www.figma.com/file/GQIqlT9vTJH1U4MWlhh13t/2022---Button-Widget-%F0%9F%91%80?node-id=1701%3A431&viewport=431%2C583%2C0.3&t=S1UqMTC1LYBD5gKg-11
