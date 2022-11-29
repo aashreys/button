@@ -68,12 +68,12 @@ function Button() {
     let id = getNodeIdFromUrl(url)
     let node = id ? figma.getNodeById(id) : null
 
-    if (node?.type === 'PAGE') {
+    if (node && node.type === 'PAGE') {
       figma.currentPage = node
       figma.closePlugin()
     }
 
-    if (node?.type !== 'PAGE' && node?.type !== 'DOCUMENT') {
+    if (node && node.type !== 'PAGE' && node.type !== 'DOCUMENT') {
       figma.currentPage = getParentPage(node as SceneNode)
       smoothScroll(node as SceneNode, 300).then(() => {
         figma.closePlugin()

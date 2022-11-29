@@ -9,7 +9,6 @@ export function getFormattedUrl(url: string): string {
 
 export function isThisFile(url: string): boolean {
   let formattedFilename = figma.root.name.trim()
-  console.log(formattedFilename)
   formattedFilename = encodeURIComponent(formattedFilename).replace(/%20/g, '-')
   let isThisFile = url.includes('figma.com') && url.includes(formattedFilename)
   // console.log(formattedFilename)
