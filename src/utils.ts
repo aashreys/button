@@ -69,11 +69,11 @@ export async function smoothScrollToNode(node: SceneNode, time: number): Promise
       let animateViewport = () => {
         currentTime++
         figma.viewport.center = {
-          x: startX + lerp(0, distX, currentTime / time),
-          y: startY + lerp(0, distY, currentTime / time),
+          x: startX + lerp(0, distX, easeOutQuint(currentTime / time)),
+          y: startY + lerp(0, distY, easeOutQuint(currentTime / time)),
         }
 
-        figma.viewport.zoom = lerp(startZoom, endZoom, currentTime / time)
+        figma.viewport.zoom = lerp(startZoom, endZoom, easeOutQuint(currentTime / time))
 
         if (currentTime < time) {
           setTimeout(() => { animateViewport() }, intervalMs)
@@ -89,4 +89,8 @@ export async function smoothScrollToNode(node: SceneNode, time: number): Promise
 
 function lerp(a: number, b: number, t: number) {
   return (1 - t) * a + t * b
+}
+
+function easeOutQuint(x: number): number {
+  return 1 - Math.pow(1 - x, 5);
 }

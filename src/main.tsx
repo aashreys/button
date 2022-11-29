@@ -75,7 +75,7 @@ function Button() {
 
     if (node?.type !== 'PAGE' && node?.type !== 'DOCUMENT') {
       figma.currentPage = getParentPage(node as SceneNode)
-      smoothScroll(node as SceneNode, 250).then(() => {
+      smoothScroll(node as SceneNode, 300).then(() => {
         figma.closePlugin()
       })
     }
