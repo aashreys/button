@@ -2,21 +2,12 @@
 
 const { widget } = figma
 const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, Input } = widget
-import { getFormattedUrl, getNodeIdFromUrl, getParentPage, isThisFile, smoothScrollToNode as smoothScroll } from './utils'
+import { getNodeIdFromUrl, getParentPage, isThisFile, smoothScrollToNode as smoothScroll } from './utils'
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
-
-const INPUT_FRAME_PROPS = {
-  fill: "#ffffff",
-  stroke: "#757575",
-  strokeWidth: 2,
-  cornerRadius: 16,
-  padding: 20,
-}
-
-const LINK_ICON = `<svg class="svg" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10.232 16.95l1.945-1.945.707.707-1.945 1.945c-1.269 1.27-3.327 1.27-4.596 0-1.27-1.27-1.27-3.327 0-4.596l1.945-1.945.707.707-1.945 1.945c-.878.878-.878 2.303 0 3.182.879.878 2.304.878 3.182 0zm5.48-4.066l-.707-.707 1.945-1.945c.878-.878.878-2.303 0-3.182-.879-.878-2.304-.878-3.182 0l-1.945 1.945-.707-.707 1.945-1.945c1.269-1.27 3.327-1.27 4.596 0 1.27 1.27 1.27 3.327 0 4.596l-1.945 1.945zm-5.45 1.62l4.242-4.242-.766-.766-4.242 4.242.766.766z" fill-rule="nonzero" fill-opacity="1" fill="#fff" stroke="none"></path></svg>`
-
-const enum UiState { VISIBLE, HIDDEN }
+import { on, showUI } from '@create-figma-plugin/utilities'
+import { LABEL_UPDATED, URL_UPDATED } from './events'
+import { LINK_ICON } from './link_icon'
 
 export default function () {
   figma.skipInvisibleInstanceChildren = true
@@ -24,26 +15,29 @@ export default function () {
 }
 
 function Button() {
-  const placeholderLabel = 'Button ->'
   const [url, setUrl] = useSyncedState('url', '')
   const [label, setLabel] = useSyncedState('label', '')
-  const [editUiState, setEditUiState] = useSyncedState('editUiState', UiState.VISIBLE)
   const [theme, setTheme] = useSyncedState('theme', Themes.getDefaultTheme())
   const [size, setSize] = useSyncedState('size', Sizes.getDefaultSize())
 
-  function updateButton(label: string, url: string) {
-    setLabel(label)
-    setUrl(getFormattedUrl(url))
+  function showSettingsUi() {
+    showUI(
+      { title: 'Edit URL', height: 144, width: 240 },
+      { label, url }
+    )
   }
 
   function isUrlSet(): boolean {
     return url.length > 0
   }
 
+  function isLabelSet(): boolean {
+    return label.length > 0
+  }
+
   function handleClick() {
     return new Promise(() => {
       if (isUrlSet()) {
-        setEditUiState(UiState.HIDDEN)
         if (isThisFile(url)) {
           navigateToNode(url)
         }
@@ -52,8 +46,7 @@ function Button() {
         }
       }
       else {
-        setEditUiState(UiState.VISIBLE)
-        figma.closePlugin('Type or paste a URL to open')
+        showSettingsUi()
       }
     })
   }
@@ -81,10 +74,14 @@ function Button() {
     }
 
     if (!node) {
-      setEditUiState(UiState.VISIBLE)
-      figma.closePlugin('Target layer may have been deleted. Please update URL.')
+      figma.notify('Target layer may have been deleted. Please update URL.')
+      showSettingsUi()
     }
   }
+
+  on(LABEL_UPDATED, (data) => { setLabel(data.label) })
+
+  on(URL_UPDATED, (data) => { setUrl(data.url) })
 
   useStickable()
 
@@ -114,17 +111,13 @@ function Button() {
         itemType: 'separator'
       },
       {
-        itemType: 'toggle',
-        tooltip: 'Change URL',
+        itemType: 'action',
+        tooltip: 'Edit URL',
         propertyName: 'edit',
-        isToggled: editUiState === UiState.VISIBLE,
         icon: LINK_ICON
-      }
+      },
     ],
     (event) => { 
-      if (event.propertyName === 'edit') {
-        setEditUiState(editUiState === UiState.HIDDEN ? UiState.VISIBLE : UiState.HIDDEN) 
-      }
       if (event.propertyName === 'color') {
         let theme: Theme = Themes.getAllThemes().find(
           theme => theme.primaryColor === event.propertyValue
@@ -137,6 +130,11 @@ function Button() {
         ) as Size
         setSize(size)
       }
+      if (event.propertyName === 'edit') {
+        return new Promise<void>(() => {
+          showSettingsUi()
+        })
+      }
     },
   )
 
@@ -146,49 +144,9 @@ function Button() {
       overflow="visible"
       direction="vertical"
       spacing={16}
-      padding={{
-        bottom: size.shadowDepth
-      }}
+      padding={{ bottom: size.shadowDepth}}
       horizontalAlignItems="center"
     >
-      <AutoLayout
-      name="Config"
-      width={500}
-      overflow="visible"
-      direction="vertical"
-      spacing={4}
-      horizontalAlignItems="center"
-      hidden={editUiState === UiState.HIDDEN}
-      >
-        <Input
-          name='Label'
-          value={label}
-          fontFamily="Inter"
-          placeholder="Type label"
-          onTextEditEnd={(e) => {
-            updateButton(e.characters, url)
-          }}
-          fontSize={24}
-          fill="#333333"
-          width="fill-parent"
-          inputFrameProps={INPUT_FRAME_PROPS}
-          inputBehavior="truncate"
-        />
-        <Input
-          name='URL'
-          value={url}
-          fontFamily="Inter"
-          placeholder="Type or paste web or layer URL"
-          onTextEditEnd={(e) => {
-            updateButton(label, e.characters)
-          }}
-          fontSize={24}
-          fill="#333333"
-          width="fill-parent"
-          inputFrameProps={INPUT_FRAME_PROPS}
-          inputBehavior="truncate"
-        />
-      </AutoLayout>
       <AutoLayout
         name="Button"
         effect={{
@@ -222,9 +180,13 @@ function Button() {
           } : {}}
           fontFamily="Inter"
           fontSize={size.fontSize}
-          fontWeight={500}
+          fontWeight={600}
         >
-          {label.length > 0 ? label : placeholderLabel}
+          {
+            isUrlSet() 
+            ? (isLabelSet() ? label : 'Open Link ->')
+            : 'Configure Button ⚙️'
+          }
         </Text>
       </AutoLayout>
     </AutoLayout>
