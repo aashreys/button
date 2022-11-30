@@ -6,10 +6,10 @@ import { createNodeNavigationUrl as createNodeNavUrl, formatUrl, getNodeIdFromUr
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
 import { emit, on, showUI } from '@create-figma-plugin/utilities'
-import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, MSG_CONFIGURE_WIDGET, MSG_GO_TO_LAYER, MSG_OPEN_LINK } from './constants'
+import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, MSG_SET_URL, MSG_GO_TO_LAYER, MSG_OPEN_LINK, MSG_LAYER_DELETED, MSG_NAV_TO_LAYER } from './constants'
 import { LINK_ICON } from './link_icon'
 
-export enum URLType {
+export enum UrlType {
   WEB, FIGMA, NODE_NAV, EMPTY
 }
 
@@ -32,8 +32,8 @@ function Button() {
     )
   }
 
-  function isUrlNotEmpty(): boolean {
-    return url.length > 0
+  function isUrlSet(): boolean {
+    return getUrlType(url) !== UrlType.EMPTY
   }
 
   function isLabelSet(): boolean {
@@ -42,8 +42,8 @@ function Button() {
 
   function handleClick() {
     return new Promise(() => {
-      if (isUrlNotEmpty()) {
-        if (getUrlType(url) === URLType.NODE_NAV) {
+      if (isUrlSet()) {
+        if (getUrlType(url) === UrlType.NODE_NAV) {
           let id = getNodeIdFromUrl(url)
           navigateToNode(id)
         }
@@ -79,9 +79,8 @@ function Button() {
     }
 
     if (!node) {
-      let message: string = 'Linked layer may have been deleted. Please update URL.'
-      figma.notify(message)
-      showSettingsUi(message)
+      figma.notify(MSG_LAYER_DELETED)
+      showSettingsUi(MSG_LAYER_DELETED)
     }
   }
 
@@ -94,7 +93,7 @@ function Button() {
     if (isURLFromThisFile(url)) {
       let nodeId = getNodeIdFromUrl(url)
       if (nodeId) url = createNodeNavUrl(nodeId)
-      message = 'Button will navigate to selected layer.'
+      message = MSG_NAV_TO_LAYER
     }
     
     setUrl(url)
@@ -150,7 +149,7 @@ function Button() {
       }
       if (event.propertyName === 'edit') {
         return new Promise<void>(() => {
-          showSettingsUi()
+          showSettingsUi(getUrlType(url) === UrlType.NODE_NAV ? MSG_NAV_TO_LAYER : '')
         })
       }
     },
@@ -159,10 +158,10 @@ function Button() {
   function getButtonLabel(): string {
     let urlType = getUrlType(url)
     switch (urlType) {
-      case URLType.EMPTY: return MSG_CONFIGURE_WIDGET
-      case URLType.FIGMA: return isLabelSet() ? label : MSG_OPEN_LINK
-      case URLType.NODE_NAV: return isLabelSet() ? label : MSG_GO_TO_LAYER
-      case URLType.WEB: return isLabelSet() ? label : MSG_OPEN_LINK
+      case UrlType.EMPTY: return MSG_SET_URL
+      case UrlType.FIGMA: return isLabelSet() ? label : MSG_OPEN_LINK
+      case UrlType.NODE_NAV: return isLabelSet() ? label : MSG_GO_TO_LAYER
+      case UrlType.WEB: return isLabelSet() ? label : MSG_OPEN_LINK
     }
   }
 
@@ -172,23 +171,28 @@ function Button() {
       overflow="visible"
       direction="vertical"
       spacing={16}
-      padding={{ bottom: size.shadowDepth }}
+      padding={{ 
+        top: 12,
+        bottom: 12 + size.shadowDepth,
+        left: 12,
+        right: 12
+      }}
       horizontalAlignItems="center"
     >
       <AutoLayout
         name="Button"
         effect={{
           type: "drop-shadow",
-          color: isUrlNotEmpty() ? theme.primaryColor : "#d9d9d9",
+          color: isUrlSet() ? theme.primaryColor : "#d9d9d9",
           offset: { x: 0, y: size.shadowDepth },
           blur: 0,
           showShadowBehindNode: false,
         }}
         fill="#ffffff"
-        hoverStyle={isUrlNotEmpty() ? {
+        hoverStyle={isUrlSet() ? {
           fill: theme.primaryColor
         } : {}}
-        stroke={isUrlNotEmpty() ? theme.primaryColor : "#d9d9d9"}
+        stroke={isUrlSet() ? theme.primaryColor : "#d9d9d9"}
         cornerRadius={size.cornerRadius}
         strokeWidth={size.strokeWidth}
         overflow="visible"
@@ -203,7 +207,7 @@ function Button() {
         <Text
           name="Label"
           fill={theme.textColor}
-          hoverStyle={isUrlNotEmpty() ? {
+          hoverStyle={isUrlSet() ? {
             fill: theme.hoverTextColor
           } : {}}
           fontFamily="Inter"

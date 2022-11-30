@@ -1,5 +1,5 @@
 import { getAbsolutePosition } from "@create-figma-plugin/utilities"
-import { URLType } from "./main"
+import { UrlType } from "./main"
 
 const NODE_NAV_SCHEME = 'button:navigateTo -> '
 
@@ -13,7 +13,7 @@ export function formatUrl(url: string): string {
 export function isURLFromThisFile(url: string): boolean {
   let formattedFilename = figma.root.name.trim()
   formattedFilename = encodeURIComponent(formattedFilename).replace(/%20/g, '-')
-  let isThisFile = getUrlType(url) === URLType.FIGMA && url.includes(formattedFilename)
+  let isThisFile = getUrlType(url) === UrlType.FIGMA && url.includes(formattedFilename)
   // console.log(formattedFilename)
   // console.log(url)
   // console.log('Is this file: ' + isThisFile)
@@ -25,7 +25,7 @@ export function getNodeIdFromUrl(url: string): string | null {
 
   let urlType = getUrlType(url)
 
-  if (urlType === URLType.FIGMA) {
+  if (urlType === UrlType.FIGMA) {
     url = url.toLowerCase()
     let startIndex: number = url.indexOf('node-id=') + 8
     let endIndex: number = url.indexOf('&', startIndex)
@@ -38,7 +38,7 @@ export function getNodeIdFromUrl(url: string): string | null {
     }
   }
   
-  if (urlType === URLType.NODE_NAV) {
+  if (urlType === UrlType.NODE_NAV) {
     nodeId = url.replace(NODE_NAV_SCHEME, '')
   }
 
@@ -111,9 +111,9 @@ export function createNodeNavigationUrl(id: string): string {
   return NODE_NAV_SCHEME + id
 }
 
-export function getUrlType(url: string): URLType {
-  if (url.length === 0) return URLType.EMPTY
-  if (url.includes('figma.com')) return URLType.FIGMA
-  if (url.includes(NODE_NAV_SCHEME)) return URLType.NODE_NAV
-  return URLType.WEB
+export function getUrlType(url: string): UrlType {
+  if (url.length === 0) return UrlType.EMPTY
+  if (url.includes('figma.com')) return UrlType.FIGMA
+  if (url.includes(NODE_NAV_SCHEME)) return UrlType.NODE_NAV
+  return UrlType.WEB
 }
