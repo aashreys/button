@@ -68,7 +68,7 @@ export async function smoothScroll(node: SceneNode, time: number): Promise<void>
   let zoomMultiplier = 1.2
   let startZoom = figma.viewport.zoom
   let endZoom: number
-  if (node.width >= node.height) {
+  if (node.width > node.height) {
     endZoom = (figma.viewport.bounds.width * figma.viewport.zoom) / (node.width * zoomMultiplier)
   }
   else {
