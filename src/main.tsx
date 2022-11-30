@@ -2,12 +2,16 @@
 
 const { widget } = figma
 const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable } = widget
-import { createNodeNavigationUrl, formatUrl, getIdFromNodeNavigationUrl, getNodeIdFromUrl, getParentPage, isNodeNavigationUrl, isURLFromThisFile, smoothScroll } from './utils'
+import { createNodeNavigationUrl as createNodeNavUrl, formatUrl, getNodeIdFromUrl, getParentPage, getUrlType, isURLFromThisFile, smoothScroll } from './utils'
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
 import { emit, on, showUI } from '@create-figma-plugin/utilities'
-import { LABEL_UPDATED, URL_UPDATED } from './events'
+import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, MSG_CONFIGURE_WIDGET, MSG_GO_TO_LAYER, MSG_OPEN_LINK } from './constants'
 import { LINK_ICON } from './link_icon'
+
+export enum URLType {
+  WEB, FIGMA, NODE_NAV, EMPTY
+}
 
 export default function () {
   figma.skipInvisibleInstanceChildren = true
@@ -20,14 +24,15 @@ function Button() {
   const [theme, setTheme] = useSyncedState('theme', Themes.getDefaultTheme())
   const [size, setSize] = useSyncedState('size', Sizes.getDefaultSize())
 
-  function showSettingsUi() {
+  function showSettingsUi(message?: string) {
+    message = message ? message : ''
     showUI(
       { title: 'Edit URL', height: 144, width: 240 },
-      { label, url }
+      { label, url, message }
     )
   }
 
-  function isUrlSet(): boolean {
+  function isUrlNotEmpty(): boolean {
     return url.length > 0
   }
 
@@ -37,9 +42,9 @@ function Button() {
 
   function handleClick() {
     return new Promise(() => {
-      if (isUrlSet()) {
-        if (isNodeNavigationUrl(url)) {
-          let id = getIdFromNodeNavigationUrl(url)
+      if (isUrlNotEmpty()) {
+        if (getUrlType(url) === URLType.NODE_NAV) {
+          let id = getNodeIdFromUrl(url)
           navigateToNode(id)
         }
         else {
@@ -58,7 +63,7 @@ function Button() {
     setTimeout(figma.closePlugin, 1000)
   }
 
-  function navigateToNode(id: string | undefined) {
+  function navigateToNode(id: string | null) {
     let node = id ? figma.getNodeById(id) : null
 
     if (node && node.type === 'PAGE') {
@@ -74,24 +79,26 @@ function Button() {
     }
 
     if (!node) {
-      figma.notify('Target layer may have been deleted. Please update URL.')
-      showSettingsUi()
+      let message: string = 'Linked layer may have been deleted. Please update URL.'
+      figma.notify(message)
+      showSettingsUi(message)
     }
   }
 
-  on(LABEL_UPDATED, (data) => { setLabel(data.label) })
+  on(EVENT_LABEL_UPDATED, (data) => { setLabel(data.label) })
 
-  on(URL_UPDATED, (data) => {
-    console.log(data)
+  on(EVENT_URL_UPDATED, (data) => {
     let url = formatUrl(data.url)
+    let message = ''
 
     if (isURLFromThisFile(url)) {
       let nodeId = getNodeIdFromUrl(url)
-      if (nodeId) url = createNodeNavigationUrl(nodeId)
+      if (nodeId) url = createNodeNavUrl(nodeId)
+      message = 'Button will navigate to selected layer.'
     }
-
+    
     setUrl(url)
-    emit(URL_UPDATED, { url })
+    emit(EVENT_URL_UPDATED, { url, message })
   })
 
   useStickable()
@@ -149,29 +156,39 @@ function Button() {
     },
   )
 
+  function getButtonLabel(): string {
+    let urlType = getUrlType(url)
+    switch (urlType) {
+      case URLType.EMPTY: return MSG_CONFIGURE_WIDGET
+      case URLType.FIGMA: return isLabelSet() ? label : MSG_OPEN_LINK
+      case URLType.NODE_NAV: return isLabelSet() ? label : MSG_GO_TO_LAYER
+      case URLType.WEB: return isLabelSet() ? label : MSG_OPEN_LINK
+    }
+  }
+
   return (
     <AutoLayout
       name="Button"
       overflow="visible"
       direction="vertical"
       spacing={16}
-      padding={{ bottom: size.shadowDepth}}
+      padding={{ bottom: size.shadowDepth }}
       horizontalAlignItems="center"
     >
       <AutoLayout
         name="Button"
         effect={{
           type: "drop-shadow",
-          color: isUrlSet() ? theme.primaryColor : "#d9d9d9",
+          color: isUrlNotEmpty() ? theme.primaryColor : "#d9d9d9",
           offset: { x: 0, y: size.shadowDepth },
           blur: 0,
           showShadowBehindNode: false,
         }}
         fill="#ffffff"
-        hoverStyle={isUrlSet() ? {
+        hoverStyle={isUrlNotEmpty() ? {
           fill: theme.primaryColor
         } : {}}
-        stroke={isUrlSet() ? theme.primaryColor : "#d9d9d9"}
+        stroke={isUrlNotEmpty() ? theme.primaryColor : "#d9d9d9"}
         cornerRadius={size.cornerRadius}
         strokeWidth={size.strokeWidth}
         overflow="visible"
@@ -186,18 +203,14 @@ function Button() {
         <Text
           name="Label"
           fill={theme.textColor}
-          hoverStyle={isUrlSet() ? {
+          hoverStyle={isUrlNotEmpty() ? {
             fill: theme.hoverTextColor
           } : {}}
           fontFamily="Inter"
           fontSize={size.fontSize}
           fontWeight={600}
         >
-          {
-            isUrlSet() 
-            ? (isLabelSet() ? label : 'Open Link ->')
-            : 'Configure Button ⚙️'
-          }
+          { getButtonLabel() }
         </Text>
       </AutoLayout>
     </AutoLayout>

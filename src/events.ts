@@ -1,2 +1,0 @@
-export const LABEL_UPDATED = 'LABEL_UPDATED'
-export const URL_UPDATED = 'URL_UPDATED'

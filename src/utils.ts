@@ -1,6 +1,7 @@
 import { getAbsolutePosition } from "@create-figma-plugin/utilities"
+import { URLType } from "./main"
 
-const NODE_NAV_SCHEME = 'btn:navigateTo://'
+const NODE_NAV_SCHEME = 'button:navigateTo -> '
 
 export function formatUrl(url: string): string {
   if (url.length > 0 && url.indexOf(':') < 0) {
@@ -12,7 +13,7 @@ export function formatUrl(url: string): string {
 export function isURLFromThisFile(url: string): boolean {
   let formattedFilename = figma.root.name.trim()
   formattedFilename = encodeURIComponent(formattedFilename).replace(/%20/g, '-')
-  let isThisFile = url.includes('figma.com') && url.includes(formattedFilename)
+  let isThisFile = getUrlType(url) === URLType.FIGMA && url.includes(formattedFilename)
   // console.log(formattedFilename)
   // console.log(url)
   // console.log('Is this file: ' + isThisFile)
@@ -20,18 +21,28 @@ export function isURLFromThisFile(url: string): boolean {
 }
 
 export function getNodeIdFromUrl(url: string): string | null {
-  url = url.toLowerCase()
-  let startIndex: number = url.indexOf('node-id=') + 8
-  let endIndex: number = url.indexOf('&', startIndex)
-  if (startIndex) {
-    if (endIndex > 0) {
-      return url.substring(startIndex, endIndex).replace('%3a', ':')
-    } else {
-      return url.substring(startIndex).replace('%3a', ':')
+  let nodeId = null
+
+  let urlType = getUrlType(url)
+
+  if (urlType === URLType.FIGMA) {
+    url = url.toLowerCase()
+    let startIndex: number = url.indexOf('node-id=') + 8
+    let endIndex: number = url.indexOf('&', startIndex)
+    if (startIndex) {
+      if (endIndex > 0) {
+        nodeId = url.substring(startIndex, endIndex).replace('%3a', ':')
+      } else {
+        nodeId = url.substring(startIndex).replace('%3a', ':')
+      }
     }
-  } else {
-    return null
   }
+  
+  if (urlType === URLType.NODE_NAV) {
+    nodeId = url.replace(NODE_NAV_SCHEME, '')
+  }
+
+  return nodeId
 }
 
 export function getParentPage(node: SceneNode | PageNode): PageNode {
@@ -96,16 +107,13 @@ function easeOutQuint(x: number): number {
   return 1 - Math.pow(1 - x, 5);
 }
 
-export function isNodeNavigationUrl(url: string) {
-  return url.includes(NODE_NAV_SCHEME)
-}
-
 export function createNodeNavigationUrl(id: string): string {
-  return `${NODE_NAV_SCHEME}node-id=${id}`
+  return NODE_NAV_SCHEME + id
 }
 
-export function getIdFromNodeNavigationUrl(url: string): string | undefined {
-  if (isNodeNavigationUrl(url)) {
-    return url.substring(url.indexOf('node-id=') + 8)
-  }
+export function getUrlType(url: string): URLType {
+  if (url.length === 0) return URLType.EMPTY
+  if (url.includes('figma.com')) return URLType.FIGMA
+  if (url.includes(NODE_NAV_SCHEME)) return URLType.NODE_NAV
+  return URLType.WEB
 }

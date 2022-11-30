@@ -9,17 +9,18 @@ import {
 import { emit, on } from '@create-figma-plugin/utilities'
 import { Fragment, h } from 'preact'
 import { useState } from 'preact/hooks'
-import { LABEL_UPDATED, URL_UPDATED } from './events'
-import { createNodeNavigationUrl, formatUrl, getNodeIdFromUrl as getNodeIdFromFigmaUrl, isNodeNavigationUrl, isURLFromThisFile } from './utils'
+import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED } from './constants'
 
-function Plugin(props: { label: string, url: string }) {
-
-  const FIGMA_LAYER_MESSAGE = 'Button will navigate to a Figma / FigJam layer.'
+function Plugin(props: { label: string, url: string, message: string }) {
 
   const [label, setLabel] = useState(props.label)
   const [url, setUrl] = useState(props.url)
+  const [message, setMessage] = useState(props.message)
 
-  on(URL_UPDATED, (data) => { setUrl(data.url) })
+  on(EVENT_URL_UPDATED, (data) => {
+    setUrl(data.url) 
+    setMessage(data.message)
+  })
 
   return (
     <Container space="small">
@@ -31,7 +32,7 @@ function Plugin(props: { label: string, url: string }) {
         value={label}
         onValueInput={() => {
           setLabel(label)
-          emit(LABEL_UPDATED, { label })
+          emit(EVENT_LABEL_UPDATED, { label })
         }}
         variant="border" />
 
@@ -43,7 +44,7 @@ function Plugin(props: { label: string, url: string }) {
         value={url}
         onValueInput={setUrl}
         validateOnBlur={(url) => {
-          emit(URL_UPDATED, { url })
+          emit(EVENT_URL_UPDATED, { url })
           return url
         }}
         variant="border" />
@@ -51,9 +52,9 @@ function Plugin(props: { label: string, url: string }) {
       <VerticalSpace space="small" />
 
       {
-        isNodeNavigationUrl(url) &&
+        message.length > 0 &&
         <Fragment>
-          <Text>{FIGMA_LAYER_MESSAGE}</Text>
+          <Text>{message}</Text>
           <VerticalSpace space="small" />
         </Fragment>
       }
