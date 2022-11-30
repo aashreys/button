@@ -1,11 +1,11 @@
 /** @jsx figma.widget.h */
 
 const { widget } = figma
-const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, Input } = widget
-import { getNodeIdFromUrl, getParentPage, isThisFile, smoothScrollToNode as smoothScroll } from './utils'
+const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable } = widget
+import { createNodeNavigationUrl, formatUrl, getIdFromNodeNavigationUrl, getNodeIdFromUrl, getParentPage, isNodeNavigationUrl, isURLFromThisFile, smoothScroll } from './utils'
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
-import { on, showUI } from '@create-figma-plugin/utilities'
+import { emit, on, showUI } from '@create-figma-plugin/utilities'
 import { LABEL_UPDATED, URL_UPDATED } from './events'
 import { LINK_ICON } from './link_icon'
 
@@ -38,8 +38,9 @@ function Button() {
   function handleClick() {
     return new Promise(() => {
       if (isUrlSet()) {
-        if (isThisFile(url)) {
-          navigateToNode(url)
+        if (isNodeNavigationUrl(url)) {
+          let id = getIdFromNodeNavigationUrl(url)
+          navigateToNode(id)
         }
         else {
           openUrl(url)
@@ -57,8 +58,7 @@ function Button() {
     setTimeout(figma.closePlugin, 1000)
   }
 
-  function navigateToNode(url: string) {
-    let id = getNodeIdFromUrl(url)
+  function navigateToNode(id: string | undefined) {
     let node = id ? figma.getNodeById(id) : null
 
     if (node && node.type === 'PAGE') {
@@ -81,7 +81,18 @@ function Button() {
 
   on(LABEL_UPDATED, (data) => { setLabel(data.label) })
 
-  on(URL_UPDATED, (data) => { setUrl(data.url) })
+  on(URL_UPDATED, (data) => {
+    console.log(data)
+    let url = formatUrl(data.url)
+
+    if (isURLFromThisFile(url)) {
+      let nodeId = getNodeIdFromUrl(url)
+      if (nodeId) url = createNodeNavigationUrl(nodeId)
+    }
+
+    setUrl(url)
+    emit(URL_UPDATED, { url })
+  })
 
   useStickable()
 

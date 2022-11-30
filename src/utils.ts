@@ -1,13 +1,15 @@
 import { getAbsolutePosition } from "@create-figma-plugin/utilities"
 
-export function getFormattedUrl(url: string): string {
+const NODE_NAV_SCHEME = 'btn:navigateTo://'
+
+export function formatUrl(url: string): string {
   if (url.length > 0 && url.indexOf(':') < 0) {
     url = 'https://' + url
   }
   return url
 }
 
-export function isThisFile(url: string): boolean {
+export function isURLFromThisFile(url: string): boolean {
   let formattedFilename = figma.root.name.trim()
   formattedFilename = encodeURIComponent(formattedFilename).replace(/%20/g, '-')
   let isThisFile = url.includes('figma.com') && url.includes(formattedFilename)
@@ -42,7 +44,7 @@ export function getParentPage(node: SceneNode | PageNode): PageNode {
   return page
 }
 
-export async function smoothScrollToNode(node: SceneNode, time: number): Promise<void> {
+export async function smoothScroll(node: SceneNode, time: number): Promise<void> {
   let nodePosition = getAbsolutePosition(node)
 
   // Calulate distance to move viewport
@@ -92,4 +94,18 @@ function lerp(a: number, b: number, t: number) {
 
 function easeOutQuint(x: number): number {
   return 1 - Math.pow(1 - x, 5);
+}
+
+export function isNodeNavigationUrl(url: string) {
+  return url.includes(NODE_NAV_SCHEME)
+}
+
+export function createNodeNavigationUrl(id: string): string {
+  return `${NODE_NAV_SCHEME}node-id=${id}`
+}
+
+export function getIdFromNodeNavigationUrl(url: string): string | undefined {
+  if (isNodeNavigationUrl(url)) {
+    return url.substring(url.indexOf('node-id=') + 8)
+  }
 }

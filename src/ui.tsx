@@ -3,28 +3,23 @@ import {
   render,
   Textbox,
   useInitialFocus,
-  VerticalSpace
+  VerticalSpace,
+  Text
 } from '@create-figma-plugin/ui'
-import { emit } from '@create-figma-plugin/utilities'
-import { h } from 'preact'
+import { emit, on } from '@create-figma-plugin/utilities'
+import { Fragment, h } from 'preact'
 import { useState } from 'preact/hooks'
 import { LABEL_UPDATED, URL_UPDATED } from './events'
-import { getFormattedUrl } from './utils'
+import { createNodeNavigationUrl, formatUrl, getNodeIdFromUrl as getNodeIdFromFigmaUrl, isNodeNavigationUrl, isURLFromThisFile } from './utils'
 
 function Plugin(props: { label: string, url: string }) {
+
+  const FIGMA_LAYER_MESSAGE = 'Button will navigate to a Figma / FigJam layer.'
+
   const [label, setLabel] = useState(props.label)
   const [url, setUrl] = useState(props.url)
 
-  function updateLabel(label: string) {
-    setLabel(label)
-    emit(LABEL_UPDATED, { label })
-  }
-
-  function validateUrlOnBlur(url: string): string | boolean {
-    url = getFormattedUrl(url)
-    emit(URL_UPDATED, { url })
-    return url
-  }
+  on(URL_UPDATED, (data) => { setUrl(data.url) })
 
   return (
     <Container space="small">
@@ -34,7 +29,10 @@ function Plugin(props: { label: string, url: string }) {
       <Textbox
         placeholder='Type label'
         value={label}
-        onValueInput={updateLabel}
+        onValueInput={() => {
+          setLabel(label)
+          emit(LABEL_UPDATED, { label })
+        }}
         variant="border" />
 
       <VerticalSpace space="small" />
@@ -44,10 +42,21 @@ function Plugin(props: { label: string, url: string }) {
         placeholder='Type or paste web or Figma URL'
         value={url}
         onValueInput={setUrl}
-        validateOnBlur={validateUrlOnBlur}
+        validateOnBlur={(url) => {
+          emit(URL_UPDATED, { url })
+          return url
+        }}
         variant="border" />
 
       <VerticalSpace space="small" />
+
+      {
+        isNodeNavigationUrl(url) &&
+        <Fragment>
+          <Text>{FIGMA_LAYER_MESSAGE}</Text>
+          <VerticalSpace space="small" />
+        </Fragment>
+      }
       
     </Container>
   )
