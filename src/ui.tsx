@@ -30,7 +30,7 @@ function Plugin(props: { label: string, url: string, message: string }) {
       <Textbox
         placeholder='Type label'
         value={label}
-        onValueInput={() => {
+        onValueInput={(label) => {
           setLabel(label)
           emit(EVENT_LABEL_UPDATED, { label })
         }}
