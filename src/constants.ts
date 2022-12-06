@@ -20,3 +20,6 @@ export const SCHEME_VIEW = 'button:goto:view -> '
 export const MSG_TARGET_NODE = 'Button will navigate to selected layer.'
 export const MSG_TARGET_PAGE = 'Button will navigate to selected page.'
 export const MSG_TARGET_VIEW = 'Button will navigate to current view.'
+
+export const BTN_NAVIGATE_SELECTION = 'Navigate to selection'
+export const BTN_NAVIGATE_VIEW = 'Navigate to current location'

@@ -10,7 +10,7 @@ import {
 import { emit, on } from '@create-figma-plugin/utilities'
 import { Fragment, h } from 'preact'
 import { useEffect, useState } from 'preact/hooks'
-import { EVENT_ENABLE_NODE_BUTTON, EVENT_LABEL_UPDATED, EVENT_NODE_SELECTED, EVENT_URL_UPDATED, EVENT_VIEW_SELECTED } from './constants'
+import { BTN_NAVIGATE_SELECTION, BTN_NAVIGATE_VIEW, EVENT_ENABLE_NODE_BUTTON, EVENT_LABEL_UPDATED, EVENT_NODE_SELECTED, EVENT_URL_UPDATED, EVENT_VIEW_SELECTED } from './constants'
 import styles from './styles.css'
 
 function Plugin(props: 
@@ -99,19 +99,19 @@ function Plugin(props:
 
         <VerticalSpace space="medium" />
 
-        <Button 
+        <Button
         fullWidth 
         disabled={!enableNodeButton}
         onClick={() => emit(EVENT_NODE_SELECTED)}>
-          Navigate to selected layer
+          {BTN_NAVIGATE_SELECTION}
         </Button>
 
         <VerticalSpace space="extraSmall" />
 
-        <Button 
+        <Button
         fullWidth
         onClick={() => emit(EVENT_VIEW_SELECTED)}>
-          Navigate to current view
+          {BTN_NAVIGATE_VIEW}
         </Button>
 
         <VerticalSpace space="small" />
