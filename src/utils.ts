@@ -1,49 +1,4 @@
 import { getAbsolutePosition } from "@create-figma-plugin/utilities"
-import { UrlType } from "./main"
-
-const NODE_NAV_SCHEME = 'button:navigateTo -> '
-
-export function formatUrl(url: string): string {
-  if (url.length > 0 && url.indexOf(':') < 0) {
-    url = 'https://' + url
-  }
-  return url
-}
-
-export function isURLFromThisFile(url: string): boolean {
-  let formattedFilename = figma.root.name.trim()
-  formattedFilename = encodeURIComponent(formattedFilename).replace(/%20/g, '-')
-  let isThisFile = getUrlType(url) === UrlType.FIGMA && url.includes(formattedFilename)
-  // console.log(formattedFilename)
-  // console.log(url)
-  // console.log('Is this file: ' + isThisFile)
-  return isThisFile
-}
-
-export function getNodeIdFromUrl(url: string): string | null {
-  let nodeId = null
-
-  let urlType = getUrlType(url)
-
-  if (urlType === UrlType.FIGMA) {
-    url = url.toLowerCase()
-    let startIndex: number = url.indexOf('node-id=') + 8
-    let endIndex: number = url.indexOf('&', startIndex)
-    if (startIndex) {
-      if (endIndex > 0) {
-        nodeId = url.substring(startIndex, endIndex).replace('%3a', ':')
-      } else {
-        nodeId = url.substring(startIndex).replace('%3a', ':')
-      }
-    }
-  }
-  
-  if (urlType === UrlType.NODE_NAV) {
-    nodeId = url.replace(NODE_NAV_SCHEME, '')
-  }
-
-  return nodeId
-}
 
 export function getPage(node: SceneNode | PageNode): PageNode {
   let page
@@ -108,15 +63,4 @@ function lerp(a: number, b: number, t: number) {
 
 function easeOutQuint(x: number): number {
   return 1 - Math.pow(1 - x, 5);
-}
-
-export function createNodeNavigationUrl(id: string): string {
-  return NODE_NAV_SCHEME + id
-}
-
-export function getUrlType(url: string): UrlType {
-  if (url.length === 0) return UrlType.EMPTY
-  if (url.includes('figma.com')) return UrlType.FIGMA
-  if (url.includes(NODE_NAV_SCHEME)) return UrlType.NODE_NAV
-  return UrlType.WEB
 }

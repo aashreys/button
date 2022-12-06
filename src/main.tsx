@@ -16,10 +16,6 @@ export default function () {
   widget.register(Button)
 }
 
-export enum UrlType {
-  EMPTY, FIGMA, WEB, NODE_NAV
-}
-
 function Button() {
   const [target, setTarget] = useSyncedState<Target>('target', new EmptyTarget())
   const [label, setLabel] = useSyncedState('label', '')
