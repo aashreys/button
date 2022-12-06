@@ -1,4 +1,4 @@
-import { MSG_TARGET_NODE, MSG_TARGET_PAGE, SCHEME_NODE, SCHEME_PAGE, SCHEME_VIEW } from "../constants"
+import { MSG_TARGET_NODE, MSG_TARGET_PAGE, MSG_TARGET_VIEW, SCHEME_NODE, SCHEME_PAGE, SCHEME_VIEW } from "../constants"
 
 export enum TargetType {
   EMPTY, WEB, NODE, PAGE, VIEW
@@ -79,11 +79,19 @@ export class ViewTarget implements Target {
   readonly type: TargetType
   readonly url: string
   readonly message: string
+  readonly pageId: string
+  readonly x: number
+  readonly y: number
+  readonly zoom: number
 
   constructor(page: PageNode, x: number, y: number, zoom: number) {
     this.type = TargetType.VIEW
     this.url = SCHEME_VIEW + `${page.id},${x},${y},${zoom}`
-    this.message = MSG_TARGET_PAGE
+    this.message = MSG_TARGET_VIEW
+    this.pageId = page.id
+    this.x = x
+    this.y = y
+    this.zoom = zoom
   }
 
 }

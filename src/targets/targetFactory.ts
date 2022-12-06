@@ -25,6 +25,20 @@ export class TargetResolver {
       else throw new Error(MSG_LAYER_NOT_FOUND)
     }
 
+    if (url.includes(SCHEME_VIEW)) {
+      let viewParams = url.replace(SCHEME_VIEW, '').split(',')
+      let page = figma.getNodeById(viewParams[0]) as PageNode
+      if (page) {
+        return this.fromView(
+          page, 
+          Number(viewParams[1]), 
+          Number(viewParams[2]), 
+          Number(viewParams[3])
+        )
+      }
+      else throw new Error(MSG_LAYER_NOT_FOUND)
+    }
+
     if (url.length > 0) {
       if (!url.includes(':')) url = 'https://' + url.toLowerCase()
       return new WebTarget(url)

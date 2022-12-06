@@ -1,5 +1,5 @@
 import { MSG_LAYER_NOT_FOUND } from "../constants";
-import { getPage, smoothScrollToNode } from "../utils";
+import { getPage, smoothScrollToNode, smoothScrollToPoint } from "../utils";
 import { NodeTarget, PageTarget, Target, TargetType, ViewTarget, WebTarget } from "./target";
 
 export class Navigator {
@@ -10,7 +10,7 @@ export class Navigator {
       case TargetType.WEB: return this.navigateToWebTarget(target)
       case TargetType.NODE: return this.navigateToNodeTarget(target as NodeTarget)
       case TargetType.PAGE: return this.navigateToPageTarget(target as PageTarget)
-      case TargetType.VIEW: return this.navigateToViewTarget(target)
+      case TargetType.VIEW: return this.navigateToViewTarget(target as ViewTarget)
       case TargetType.EMPTY: return new Promise<void>((resolve, reject) => {reject()})
     }
   }
@@ -44,7 +44,7 @@ export class Navigator {
     return new Promise<void>((resolve, reject) => {
       let page = figma.getNodeById(target.pageId)
       if (page && page.type === 'PAGE') {
-        figma.currentPage = page as PageNode
+        figma.currentPage = page
         resolve()
       }
       else {
@@ -54,7 +54,18 @@ export class Navigator {
   }
 
   private navigateToViewTarget(target: ViewTarget): Promise<void> {
-    throw new Error('Not implemented yet.')
+    return new Promise<void>((resolve, reject) => {
+      let page = figma.getNodeById(target.pageId)
+      if (page && page.type === 'PAGE') {
+        figma.currentPage = page
+        smoothScrollToPoint(target.x, target.y, target.zoom, 300).then(() => {
+          resolve()
+        })
+      }
+      else {
+        reject(MSG_LAYER_NOT_FOUND)
+      }
+    })
   }
 
 }
