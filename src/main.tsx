@@ -1,104 +1,103 @@
 /** @jsx figma.widget.h */
 
 const { widget } = figma
-const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable } = widget
-import { createNodeNavigationUrl as createNodeNavUrl, formatUrl, getNodeIdFromUrl, getParentPage, getUrlType, isURLFromThisFile, smoothScroll } from './utils'
+const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, useEffect } = widget
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
 import { emit, on, showUI } from '@create-figma-plugin/utilities'
-import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, MSG_SET_URL, MSG_GO_TO_LAYER, MSG_OPEN_LINK, MSG_LAYER_DELETED, MSG_NAV_TO_LAYER } from './constants'
+import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, MSG_SET_URL, MSG_GOTO_LAYER, MSG_OPEN_LINK, MSG_GOTO_VIEW, MSG_GOTO_PAGE } from './constants'
 import { LINK_ICON } from './link_icon'
-
-export enum UrlType {
-  WEB, FIGMA, NODE_NAV, EMPTY
-}
+import { TargetResolver as TargetFactory } from './targets/target_resolver'
+import { EmptyTarget, Target, TargetType } from './targets/target'
+import { Navigator } from './targets/navigator'
 
 export default function () {
   figma.skipInvisibleInstanceChildren = true
   widget.register(Button)
 }
 
+export enum UrlType {
+  EMPTY, FIGMA, WEB, NODE_NAV
+}
+
 function Button() {
-  const [url, setUrl] = useSyncedState('url', '')
+  const [target, setTarget] = useSyncedState<Target>('target', new EmptyTarget())
   const [label, setLabel] = useSyncedState('label', '')
   const [theme, setTheme] = useSyncedState('theme', Themes.getDefaultTheme())
   const [size, setSize] = useSyncedState('size', Sizes.getDefaultSize())
+  const resolver = new TargetFactory()
+  const navigator = new Navigator()
+  let listeners: (() => void)[] = []
 
-  function showSettingsUi(message?: string) {
-    message = message ? message : ''
-    showUI(
-      { title: 'Edit URL', height: 144, width: 240 },
-      { label, url, message }
+  function showSettingsUi(message?: string, errorMessage?: string): Promise<void> {
+    return new Promise<void>(() => {
+      showUI(
+        { title: 'Edit URL', height: 144, width: 240 },
+        {
+          label: label,
+          url: target.url,
+          message: message ? message : '',
+          errorMessage: errorMessage ? errorMessage : ''
+        }
+      )
+    })
+  }
+
+  useEffect(() => {
+    addListeners()
+    return () => removeListeners()
+  })
+
+  function addListeners() {
+    listeners.push(
+      on(EVENT_LABEL_UPDATED, (data) => { setLabel(data.label) }),
+      on(EVENT_URL_UPDATED, (data) => {
+        try {
+          let target = resolver.fromUrl(data.url)
+          setTarget(target)
+          emit(EVENT_URL_UPDATED, {
+            url: target.url,
+            message: target.message,
+          })
+        }
+        catch (e: any) {
+          emit(EVENT_URL_UPDATED, {
+            url: target.url,
+            errorMessage: e.message
+          })
+        }
+      })
     )
   }
 
-  function isUrlSet(): boolean {
-    return getUrlType(url) !== UrlType.EMPTY
+  function removeListeners() {
+    while (listeners.length > 0) {
+      let removeCallback = listeners.pop()
+      if (removeCallback) removeCallback()
+    }
+  }
+
+  function closePlugin(message?: string) {
+    figma.closePlugin(message)
   }
 
   function isLabelSet(): boolean {
     return label.length > 0
   }
 
-  function handleClick() {
-    return new Promise(() => {
-      if (isUrlSet()) {
-        if (getUrlType(url) === UrlType.NODE_NAV) {
-          let id = getNodeIdFromUrl(url)
-          navigateToNode(id)
-        }
-        else {
-          openUrl(url)
-        }
-      }
-      else {
-        showSettingsUi()
-      }
+  function handleClick(): Promise<void> {
+    return new Promise<void>((resolve) => {
+      navigator.navigateTo(target)
+      .then(() => {
+        closePlugin()
+        resolve()
+      })
+      .catch((errorMessage?) => {
+        showSettingsUi('', errorMessage)
+        figma.notify(errorMessage ? errorMessage : '')
+      })
     })
   }
-
-  function openUrl(url: string) {
-    const openLinkUIString = `<script>window.open('${url}', '_blank')</script>`
-    figma.showUI(openLinkUIString, { visible: false })
-    setTimeout(figma.closePlugin, 1000)
-  }
-
-  function navigateToNode(id: string | null) {
-    let node = id ? figma.getNodeById(id) : null
-
-    if (node && node.type === 'PAGE') {
-      figma.currentPage = node
-      figma.closePlugin()
-    }
-
-    if (node && node.type !== 'PAGE' && node.type !== 'DOCUMENT') {
-      figma.currentPage = getParentPage(node as SceneNode)
-      smoothScroll(node as SceneNode, 300).then(() => {
-        figma.closePlugin()
-      })
-    }
-
-    if (!node) {
-      figma.notify(MSG_LAYER_DELETED)
-      showSettingsUi(MSG_LAYER_DELETED)
-    }
-  }
-
-  on(EVENT_LABEL_UPDATED, (data) => { setLabel(data.label) })
-
-  on(EVENT_URL_UPDATED, (data) => {
-    let url = formatUrl(data.url)
-    let message = ''
-
-    if (isURLFromThisFile(url)) {
-      let nodeId = getNodeIdFromUrl(url)
-      if (nodeId) url = createNodeNavUrl(nodeId)
-      message = MSG_NAV_TO_LAYER
-    }
-    
-    setUrl(url)
-    emit(EVENT_URL_UPDATED, { url, message })
-  })
 
   useStickable()
 
@@ -148,26 +147,26 @@ function Button() {
         setSize(size)
       }
       if (event.propertyName === 'edit') {
-        return new Promise<void>(() => {
-          showSettingsUi(getUrlType(url) === UrlType.NODE_NAV ? MSG_NAV_TO_LAYER : '')
-        })
+        return showSettingsUi()
       }
     },
   )
 
   function getButtonLabel(): string {
-    let urlType = getUrlType(url)
-    switch (urlType) {
-      case UrlType.EMPTY: return MSG_SET_URL
-      case UrlType.FIGMA: return isLabelSet() ? label : MSG_OPEN_LINK
-      case UrlType.NODE_NAV: return isLabelSet() ? label : MSG_GO_TO_LAYER
-      case UrlType.WEB: return isLabelSet() ? label : MSG_OPEN_LINK
+    let type = target.type
+    switch (type) {
+      case TargetType.NODE: return isLabelSet() ? label : MSG_GOTO_LAYER
+      case TargetType.PAGE: return isLabelSet() ? label : MSG_GOTO_PAGE
+      case TargetType.VIEW: return isLabelSet() ? label : MSG_GOTO_VIEW
+      case TargetType.WEB: return isLabelSet() ? label : MSG_OPEN_LINK
+      case TargetType.EMPTY: 
+      default: return MSG_SET_URL
     }
   }
 
   return (
     <AutoLayout
-      name="Button"
+      name="Fill Container"
       overflow="visible"
       direction="vertical"
       spacing={16}
@@ -180,19 +179,19 @@ function Button() {
       horizontalAlignItems="center"
     >
       <AutoLayout
-        name="Button"
+        name="Label Container"
         effect={{
           type: "drop-shadow",
-          color: isUrlSet() ? theme.primaryColor : "#d9d9d9",
+          color: target.type !== TargetType.EMPTY ? theme.primaryColor : "#d9d9d9",
           offset: { x: 0, y: size.shadowDepth },
           blur: 0,
           showShadowBehindNode: false,
         }}
         fill="#ffffff"
-        hoverStyle={isUrlSet() ? {
+        hoverStyle={target.type !== TargetType.EMPTY ? {
           fill: theme.primaryColor
         } : {}}
-        stroke={isUrlSet() ? theme.primaryColor : "#d9d9d9"}
+        stroke={target.type !== TargetType.EMPTY ? theme.primaryColor : "#d9d9d9"}
         cornerRadius={size.cornerRadius}
         strokeWidth={size.strokeWidth}
         overflow="visible"
@@ -207,7 +206,7 @@ function Button() {
         <Text
           name="Label"
           fill={theme.textColor}
-          hoverStyle={isUrlSet() ? {
+          hoverStyle={target.type !== TargetType.EMPTY ? {
             fill: theme.hoverTextColor
           } : {}}
           fontFamily="Inter"

@@ -45,7 +45,7 @@ export function getNodeIdFromUrl(url: string): string | null {
   return nodeId
 }
 
-export function getParentPage(node: SceneNode | PageNode): PageNode {
+export function getPage(node: SceneNode | PageNode): PageNode {
   let page
   let currentNode = node
   while (!page) {
@@ -55,48 +55,51 @@ export function getParentPage(node: SceneNode | PageNode): PageNode {
   return page
 }
 
-export async function smoothScroll(node: SceneNode, time: number): Promise<void> {
+export async function smoothScrollToNode(node: SceneNode, time: number): Promise<void> {
   let nodePosition = getAbsolutePosition(node)
-
-  // Calulate distance to move viewport
-  let startX = figma.viewport.center.x
-  let startY = figma.viewport.center.y
-  let distX = nodePosition.x + node.width / 2 - startX
-  let distY = nodePosition.y + node.height / 2 - startY
-  
-  // Caculate zoom level of viewport
+  let x = nodePosition.x + node.width / 2
+  let y = nodePosition.y + node.height / 2
   let zoomMultiplier = 1.2
-  let startZoom = figma.viewport.zoom
-  let endZoom: number
+  let zoom: number
   if (node.width > node.height) {
-    endZoom = (figma.viewport.bounds.width * figma.viewport.zoom) / (node.width * zoomMultiplier)
+    zoom = (figma.viewport.bounds.width * figma.viewport.zoom) / (node.width * zoomMultiplier)
   }
   else {
-    endZoom = (figma.viewport.bounds.height * figma.viewport.zoom) / (node.height * zoomMultiplier)
+    zoom = (figma.viewport.bounds.height * figma.viewport.zoom) / (node.height * zoomMultiplier)
   }
+  return smoothScrollToPoint(x, y, zoom, time)
+}
+
+export function smoothScrollToPoint(x: number, y: number, zoom: number, time: number) {
+  let startX = figma.viewport.center.x
+  let startY = figma.viewport.center.y
+  let distX = x - startX
+  let distY = y - startY
+
+  let startZoom = figma.viewport.zoom
+  let endZoom = zoom
 
   let currentTime = 0
   let intervalMs = 1
-  return new Promise((resolve) => {
-      let animateViewport = () => {
-        currentTime++
-        figma.viewport.center = {
-          x: startX + lerp(0, distX, easeOutQuint(currentTime / time)),
-          y: startY + lerp(0, distY, easeOutQuint(currentTime / time)),
-        }
-
-        figma.viewport.zoom = lerp(startZoom, endZoom, easeOutQuint(currentTime / time))
-
-        if (currentTime < time) {
-          setTimeout(() => { animateViewport() }, intervalMs)
-        }
-        else {
-          resolve()
-        }
+  return new Promise<void>((resolve) => {
+    let animateViewport = () => {
+      currentTime++
+      figma.viewport.center = {
+        x: startX + lerp(0, distX, easeOutQuint(currentTime / time)),
+        y: startY + lerp(0, distY, easeOutQuint(currentTime / time)),
       }
-      setTimeout(() => { animateViewport() }, intervalMs)
+
+      figma.viewport.zoom = lerp(startZoom, endZoom, easeOutQuint(currentTime / time))
+
+      if (currentTime < time) {
+        setTimeout(() => { animateViewport() }, intervalMs)
+      }
+      else {
+        resolve()
+      }
     }
-  )
+    setTimeout(() => { animateViewport() }, intervalMs)
+  })
 }
 
 function lerp(a: number, b: number, t: number) {

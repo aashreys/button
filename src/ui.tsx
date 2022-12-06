@@ -8,19 +8,31 @@ import {
 } from '@create-figma-plugin/ui'
 import { emit, on } from '@create-figma-plugin/utilities'
 import { Fragment, h } from 'preact'
-import { useState } from 'preact/hooks'
+import { useEffect, useState } from 'preact/hooks'
 import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED } from './constants'
 
-function Plugin(props: { label: string, url: string, message: string }) {
+function Plugin(props: 
+  { label: string, 
+    url: string, 
+    message: string, 
+    errorMessage: string 
+  }) {
 
   const [label, setLabel] = useState(props.label)
   const [url, setUrl] = useState(props.url)
   const [message, setMessage] = useState(props.message)
+  const [errorMessage, setErrorMessage] = useState(props.errorMessage)
 
-  on(EVENT_URL_UPDATED, (data) => {
-    setUrl(data.url) 
-    setMessage(data.message)
-  })
+  useEffect(() => {
+    let removeListener = on(EVENT_URL_UPDATED, (data) => {
+      setUrl(data.url)
+      setMessage(data.message ? data.message : '')
+      setErrorMessage(data.errorMessage ? data.errorMessage : '')
+    })
+    return () => {
+      removeListener()
+    }
+  }, []);
 
   return (
     <Container space="small">
@@ -54,7 +66,17 @@ function Plugin(props: { label: string, url: string, message: string }) {
       {
         message.length > 0 &&
         <Fragment>
-          <Text>{message}</Text>
+            <Text>{message}</Text>
+          <VerticalSpace space="small" />
+        </Fragment>
+      }
+
+      {
+        errorMessage.length > 0 &&
+        <Fragment>
+            <Text style={'color: var(--figma-color-text-danger)'}>
+              {errorMessage}
+            </Text>
           <VerticalSpace space="small" />
         </Fragment>
       }
