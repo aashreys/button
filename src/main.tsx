@@ -45,17 +45,20 @@ function Button() {
   })
 
   function addListeners() {
-    console.log('add listeners')
     listeners.push(
       on(EVENT_LABEL_UPDATED, (data) => { setLabel(data.label) }),
       on(EVENT_URL_UPDATED, (data) => {
         try {
-          let target = targetFactory.fromUrl(data.url)
-          setTarget(target)
-          emit(EVENT_URL_UPDATED, {
-            url: target.url,
-            message: target.message,
-          })
+          let newTarget = targetFactory.fromUrl(data.url)
+          if (newTarget.url !== target.url) {
+            /* Only update the target if it is 
+            different from the current target */
+            setTarget(newTarget)
+            emit(EVENT_URL_UPDATED, {
+              url: newTarget.url,
+              message: newTarget.message,
+            })
+          }
         }
         catch (e: any) {
           emit(EVENT_URL_UPDATED, {
@@ -113,7 +116,6 @@ function Button() {
   }
 
   function removeListeners() {
-    console.log('remove listeners')
     while (listeners.length > 0) {
       let removeCallback = listeners.pop()
       if (removeCallback) removeCallback()
