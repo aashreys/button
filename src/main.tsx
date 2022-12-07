@@ -5,12 +5,15 @@ const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, useEffe
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
 import { emit, on, showUI } from '@create-figma-plugin/utilities'
-import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, EVENT_SELECTION_SET, EVENT_VIEW_SELECTED, EVENT_ENABLE_NODE_BUTTON, WINDOW_TITLE } from './constants'
+import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, EVENT_SELECTION_SET, EVENT_VIEW_SELECTED, EVENT_ENABLE_NODE_BUTTON, WINDOW_TITLE, EVENT_LAYOUT_UPDATED } from './constants'
 import { TargetResolver as TargetFactory } from './targets/targetFactory'
 import { Target, TargetType } from './targets/target'
 import { EmptyTarget } from "./targets/EmptyTarget"
 import { Navigator } from './targets/navigator'
 import { SETTINGS_ICON } from './icons/settings_icon'
+
+const WIDTH = 240
+const HEIGHT = 144
 
 export default function () {
   figma.skipInvisibleInstanceChildren = true
@@ -29,7 +32,7 @@ function Button() {
   function showSettingsUi(message?: string, errorMessage?: string): Promise<void> {
     return new Promise<void>(() => {
       showUI(
-        { title: WINDOW_TITLE, height: 300, width: 240 },
+        { title: WINDOW_TITLE, height: HEIGHT, width: WIDTH },
         {
           label: label,
           url: target.url,
@@ -96,11 +99,15 @@ function Button() {
         } catch (e: any) {
           console.error(e.message)
         }
+      }),
+      on(EVENT_LAYOUT_UPDATED, (data) => {
+        let height = data.height
+        figma.ui.resize(WIDTH, height)
       })
     )
     figma.on('selectionchange', () => {
+      let selection = figma.currentPage.selection
       try {
-        let selection = figma.currentPage.selection
         emit(EVENT_ENABLE_NODE_BUTTON, { isEnabled: selection.length > 0 })
       } catch (e) {
         /* This event throws an error if selection changes 

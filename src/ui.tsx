@@ -9,9 +9,9 @@ import {
   Inline
 } from '@create-figma-plugin/ui'
 import { emit, on } from '@create-figma-plugin/utilities'
-import { h } from 'preact'
-import { useEffect, useState } from 'preact/hooks'
-import { EVENT_ENABLE_NODE_BUTTON, EVENT_LABEL_UPDATED, EVENT_SELECTION_SET, EVENT_URL_UPDATED, EVENT_VIEW_SELECTED } from './constants'
+import { Fragment, h } from 'preact'
+import { useEffect, useLayoutEffect, useState } from 'preact/hooks'
+import { EVENT_ENABLE_NODE_BUTTON, EVENT_LABEL_UPDATED, EVENT_LAYOUT_UPDATED, EVENT_SELECTION_SET, EVENT_URL_UPDATED, EVENT_VIEW_SELECTED } from './constants'
 
 function Plugin(props: 
   { label: string, 
@@ -41,10 +41,16 @@ function Plugin(props:
     }
   }, []);
 
+  useLayoutEffect(() => {
+    let height = document.getElementById('create-figma-plugin')?.clientHeight
+    console.log('height: ' + height)
+    emit(EVENT_LAYOUT_UPDATED, { height: height })
+  })
+
   return (
     <Container space="small">
 
-      <VerticalSpace space="large" />
+      <VerticalSpace space="medium" />
 
       <Textbox
         placeholder='Type label'
@@ -86,23 +92,27 @@ function Plugin(props:
 
       </Inline>
 
-      <VerticalSpace space="medium" />
-
       {
         message.length > 0 &&
-        <Text
-          align="center">
-          {message}
-        </Text>
+        <Fragment>
+          <VerticalSpace space="medium" />
+            <Text
+              align="center">
+              {message}
+            </Text>
+        </Fragment>
       }
 
       {
         errorMessage.length > 0 &&
-        <Text
-          align="center"
-          style={{ color: 'var(--figma-color-text-danger)' }}>
-          {errorMessage}
-        </Text>
+        <Fragment>
+          <VerticalSpace space="medium" />
+            <Text
+              align="center"
+              style={{ color: 'var(--figma-color-text-danger)' }}>
+              {errorMessage}
+            </Text>
+        </Fragment>
       }
 
       <VerticalSpace space="medium" />
