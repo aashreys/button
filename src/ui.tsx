@@ -6,12 +6,12 @@ import {
   VerticalSpace,
   Text,
   Button,
-  Inline
+  Columns
 } from '@create-figma-plugin/ui'
 import { emit, on } from '@create-figma-plugin/utilities'
 import { Fragment, h } from 'preact'
 import { useEffect, useLayoutEffect, useState } from 'preact/hooks'
-import { EVENT_ENABLE_NODE_BUTTON, EVENT_LABEL_UPDATED, EVENT_LAYOUT_UPDATED, EVENT_SELECTION_SET, EVENT_URL_UPDATED, EVENT_VIEW_SELECTED } from './constants'
+import { EVENT_ENABLE_NODE_BUTTON, EVENT_LABEL_UPDATED, EVENT_HEIGHT_CHANGED, EVENT_SELECTION_SET, EVENT_URL_UPDATED, EVENT_VIEW_SELECTED } from './constants'
 
 function Plugin(props: 
   { label: string, 
@@ -44,13 +44,13 @@ function Plugin(props:
   useLayoutEffect(() => {
     let height = document.getElementById('create-figma-plugin')?.clientHeight
     console.log('height: ' + height)
-    emit(EVENT_LAYOUT_UPDATED, { height: height })
+    emit(EVENT_HEIGHT_CHANGED, { height: height })
   })
 
   return (
     <Container space="small">
 
-      <VerticalSpace space="medium" />
+      <VerticalSpace space="large" />
 
       <Textbox
         placeholder='Type label'
@@ -74,28 +74,30 @@ function Plugin(props:
         }}
         variant="border" />
 
-      <VerticalSpace space="small" />
+      <VerticalSpace space="large" />
 
-      <Inline space="extraSmall">
+      <Columns space="extraSmall">
 
         <Button
           disabled={!enableNodeButton}
           secondary={!enableNodeButton}
+          fullWidth
           onClick={() => emit(EVENT_SELECTION_SET)}>
           {'Selection ->'}
         </Button>
 
         <Button
+          fullWidth
           onClick={() => emit(EVENT_VIEW_SELECTED)}>
           {'Current View ->'}
         </Button>
 
-      </Inline>
+      </Columns>
 
       {
         message.length > 0 &&
         <Fragment>
-          <VerticalSpace space="medium" />
+            <VerticalSpace space="large" />
             <Text
               align="center">
               {message}
@@ -106,7 +108,7 @@ function Plugin(props:
       {
         errorMessage.length > 0 &&
         <Fragment>
-          <VerticalSpace space="medium" />
+            <VerticalSpace space="large" />
             <Text
               align="center"
               style={{ color: 'var(--figma-color-text-danger)' }}>
@@ -115,7 +117,7 @@ function Plugin(props:
         </Fragment>
       }
 
-      <VerticalSpace space="medium" />
+      <VerticalSpace space="extraLarge" />
 
     </Container>
   )
