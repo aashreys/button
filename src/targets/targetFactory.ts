@@ -9,6 +9,9 @@ import { EmptyTarget } from "./EmptyTarget";
 
 export class TargetResolver {
 
+  // DEPRECATED, remove when Figma supports updates to inserted widgets
+  private readonly DEPRECATED_SCHEME_NODE = 'button:navigateTo -> '
+
   public fromUrl(url: string): Target {
 
     if (this.isThisFigmaFile(url) && url.toLowerCase().includes('node-id=')) {
@@ -20,6 +23,11 @@ export class TargetResolver {
     if (url.includes(SCHEME_NODE)) {
       let nodeIds = url.replace(SCHEME_NODE, '').split(',')
       return this.fromNodes(nodeIds)
+    }
+
+    if (url.includes(this.DEPRECATED_SCHEME_NODE))  {
+      let nodeId = url.replace(this.DEPRECATED_SCHEME_NODE, '')
+      return this.fromNodes([nodeId])
     }
 
     if (url.includes(SCHEME_PAGE)) {

@@ -14,6 +14,7 @@ import { SETTINGS_ICON } from './icons/settings_icon'
 
 const WIDTH = 240
 const HEIGHT = 164
+const LATEST_VERSION = 2
 
 export default function () {
   figma.skipInvisibleInstanceChildren = true
@@ -21,13 +22,35 @@ export default function () {
 }
 
 function Button() {
+  /* Version used to manage migration updates to Button */
+  const [version, setVersion] = useSyncedState('version', 1)
+
+  /* Deprecated url value from initial release, replaced by target */
+  const [deprecated_Url, set_deprecatedUrl] = useSyncedState('url', '')
+
+  /* State variables */
   const [target, setTarget] = useSyncedState<Target>('target', new EmptyTarget())
   const [label, setLabel] = useSyncedState('label', '')
   const [theme, setTheme] = useSyncedState('theme', Themes.getDefaultTheme())
   const [size, setSize] = useSyncedState('size', Sizes.getDefaultSize())
+
   const targetFactory = new TargetFactory()
   const navigator = new Navigator()
   const listeners: (() => void)[] = []
+
+  /* Migrate state to latest version, whenever 
+  Figma supports updating inserted widgets */
+  function migrate(currentVersion: number) {
+    switch (currentVersion) {
+      case 1:
+        let target = targetFactory.fromUrl(deprecated_Url)
+        setTarget(target)
+        set_deprecatedUrl('')
+        setVersion(LATEST_VERSION)
+        console.log(`Successfully migrated to version ${LATEST_VERSION}`)
+      case LATEST_VERSION:
+    }
+  }
 
   function showSettingsUi(message?: string, errorMessage?: string): Promise<void> {
     return new Promise<void>(() => {
@@ -44,6 +67,7 @@ function Button() {
   }
 
   useEffect(() => {
+    migrate(version)
     addListeners()
     return () => removeListeners()
   })
@@ -132,7 +156,6 @@ function Button() {
         resolve()
       })
       .catch((message: any) => {
-        console.log('error: ' + message)
         message = message ? message : ''
         showSettingsUi('', message)
         figma.notify(message)

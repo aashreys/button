@@ -43,7 +43,6 @@ function Plugin(props:
 
   useLayoutEffect(() => {
     let height = document.getElementById('create-figma-plugin')?.clientHeight
-    console.log('height: ' + height)
     emit(EVENT_HEIGHT_CHANGED, { height: height })
   })
 
