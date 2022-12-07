@@ -194,7 +194,11 @@ function Button() {
   )
 
   function getButtonLabel(): string {
-    return label.length > 0 ? label : target.label
+    if (target.type === TargetType.EMPTY) {
+      return target.label
+    } else {
+      return label.length > 0 ? label : target.label
+    }
   }
 
   return (
