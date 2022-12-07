@@ -35,10 +35,8 @@ export class Navigator {
         return figma.getNodeById(id)
       }).filter((node) => { return node !== null })
 
-      console.log(nodes)
-
       let isSamePage = isOnSamePage(nodes as SceneNode[])
-      
+       
       if (nodes.length > 0 && isSamePage) {
         figma.currentPage = getPage(nodes[0] as SceneNode)
         smoothScrollToNodes(nodes as SceneNode[], 300).then(() => {

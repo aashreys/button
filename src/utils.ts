@@ -2,32 +2,26 @@ import { computeMaximumBounds, getAbsolutePosition } from "@create-figma-plugin/
 
 export function getPage(node: SceneNode | PageNode): PageNode {
   let page
-  let currentNode = node
+  let currentNode: any = node
   while (!page) {
     if (currentNode.type === 'PAGE') page = currentNode
-    else currentNode = currentNode.parent as (SceneNode | PageNode)
+    else currentNode = currentNode.parent
   }
   return page
 }
 
 export function isOnSamePage(nodes: SceneNode[]): boolean {
   let lastPage: PageNode | null = null
-  let isOnSamePage = true
 
   for (let node of nodes) {
     let page = getPage(node as SceneNode)
-    if (lastPage) {
-      if (lastPage.id === page.id) {
-        isOnSamePage = true
-      } else {
-        isOnSamePage = false
-        break
-      }
+    if (lastPage && lastPage.id !== page.id) {
+      return false
     }
     lastPage = page
   }
 
-  return isOnSamePage
+  return true
 }
 
 export function getBounds(nodes: SceneNode[]): Rect {
@@ -42,12 +36,12 @@ export function getBounds(nodes: SceneNode[]): Rect {
   }
 }
 
-export async function smoothScrollToNodes(nodes: SceneNode[], time: number): Promise<void> {
+export function smoothScrollToNodes(nodes: SceneNode[], time: number): Promise<void> {
   let rect: Rect = getBounds(nodes)
   return smoothScrollToRect(rect, 1.2, time)
 }
 
-export function smoothScrollToRect(rect: Rect, zoomMultiplier: number, time: number) {
+export function smoothScrollToRect(rect: Rect, zoomMultiplier: number, time: number): Promise<void> {
   let x = rect.x + rect.width / 2
   let y = rect.y + rect.height / 2
   let zoom1 = (figma.viewport.bounds.width * figma.viewport.zoom) / (rect.width * zoomMultiplier)
@@ -56,7 +50,7 @@ export function smoothScrollToRect(rect: Rect, zoomMultiplier: number, time: num
   return smoothScrollToPoint(x, y, zoom, time)
 }
 
-export function smoothScrollToPoint(x: number, y: number, zoom: number, time: number) {
+export function smoothScrollToPoint(x: number, y: number, zoom: number, time: number): Promise<void> {
   let startX = figma.viewport.center.x
   let startY = figma.viewport.center.y
   let distX = x - startX
