@@ -50,13 +50,9 @@ export async function smoothScrollToNodes(nodes: SceneNode[], time: number): Pro
 export function smoothScrollToRect(rect: Rect, zoomMultiplier: number, time: number) {
   let x = rect.x + rect.width / 2
   let y = rect.y + rect.height / 2
-  let zoom: number
-  if (rect.width > rect.height) {
-    zoom = (figma.viewport.bounds.width * figma.viewport.zoom) / (rect.width * zoomMultiplier)
-  }
-  else {
-    zoom = (figma.viewport.bounds.height * figma.viewport.zoom) / (rect.height * zoomMultiplier)
-  }
+  let zoom1 = (figma.viewport.bounds.width * figma.viewport.zoom) / (rect.width * zoomMultiplier)
+  let zoom2 = (figma.viewport.bounds.height * figma.viewport.zoom) / (rect.height * zoomMultiplier)
+  let zoom = zoom1 < zoom2 ? zoom1 : zoom2
   return smoothScrollToPoint(x, y, zoom, time)
 }
 
