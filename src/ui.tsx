@@ -5,13 +5,13 @@ import {
   useInitialFocus,
   VerticalSpace,
   Text,
-  Button
+  Button,
+  Inline
 } from '@create-figma-plugin/ui'
 import { emit, on } from '@create-figma-plugin/utilities'
-import { Fragment, h } from 'preact'
+import { h } from 'preact'
 import { useEffect, useState } from 'preact/hooks'
 import { BTN_NAVIGATE_SELECTION, BTN_NAVIGATE_VIEW, EVENT_ENABLE_NODE_BUTTON, EVENT_LABEL_UPDATED, EVENT_SELECTION_SET, EVENT_URL_UPDATED, EVENT_VIEW_SELECTED } from './constants'
-import styles from './styles.css'
 
 function Plugin(props: 
   { label: string, 
@@ -42,84 +42,72 @@ function Plugin(props:
   }, []);
 
   return (
-    <div>
-      <Container space="small">
+    <Container space="small">
 
-        <VerticalSpace space="medium" />
+      <VerticalSpace space="large" />
 
-        <Textbox
-          placeholder='Type label'
-          value={label}
-          onValueInput={(label) => {
-            setLabel(label)
-            emit(EVENT_LABEL_UPDATED, { label })
-          }}
-          variant="border" />
+      <Textbox
+        placeholder='Type label'
+        value={label}
+        onValueInput={(label) => {
+          setLabel(label)
+          emit(EVENT_LABEL_UPDATED, { label })
+        }}
+        variant="border" />
 
-        <VerticalSpace space="small" />
+      <VerticalSpace space="small" />
 
-        <Textbox
-          {...useInitialFocus()}
-          placeholder='Type or paste web or Figma URL'
-          value={url}
-          onValueInput={setUrl}
-          validateOnBlur={(url) => {
-            emit(EVENT_URL_UPDATED, { url })
-            return url
-          }}
-          variant="border" />
+      <Textbox
+        {...useInitialFocus()}
+        placeholder='Type URL'
+        value={url}
+        onValueInput={setUrl}
+        validateOnBlur={(url) => {
+          emit(EVENT_URL_UPDATED, { url })
+          return url
+        }}
+        variant="border" />
 
-        {
-          message.length > 0 &&
-          <Fragment>
-            <VerticalSpace space="small" />
-            <Text>{message}</Text>            
-          </Fragment>
-          
-        }
+      <VerticalSpace space="small" />
 
-        {
-          errorMessage.length > 0 &&
-          <Fragment>
-            <VerticalSpace space="small" />
-            <Text style={'color: var(--figma-color-text-danger)'}>
-              {errorMessage}
-            </Text>
-          </Fragment>
-          
-        }
-
-        <VerticalSpace space="medium" />
-
-      </Container>
-
-      <hr class={styles.divider} />
-
-      <Container space="small">
-
-        <VerticalSpace space="medium" />
+      <Inline space="extraSmall">
 
         <Button
-        fullWidth 
-        secondary
-        disabled={!enableNodeButton}
-        onClick={() => emit(EVENT_SELECTION_SET)}>
+          disabled={!enableNodeButton}
+          secondary={!enableNodeButton}
+          onClick={() => emit(EVENT_SELECTION_SET)}>
           {BTN_NAVIGATE_SELECTION}
         </Button>
 
-        <VerticalSpace space="extraSmall" />
-
         <Button
-        fullWidth
-        secondary
-        onClick={() => emit(EVENT_VIEW_SELECTED)}>
+          onClick={() => emit(EVENT_VIEW_SELECTED)}>
           {BTN_NAVIGATE_VIEW}
         </Button>
 
-        <VerticalSpace space="small" />
+      </Inline>
 
-      </Container>
-    </div>
+      <VerticalSpace space="medium" />
+
+      {
+        message.length > 0 &&
+        <Text
+          align="center">
+          {message}
+        </Text>
+      }
+
+      {
+        errorMessage.length > 0 &&
+        <Text
+          align="center"
+          style={{ color: 'var(--figma-color-text-danger)' }}>
+          {errorMessage}
+        </Text>
+      }
+
+      <VerticalSpace space="medium" />
+
+    </Container>
   )
 }
 
