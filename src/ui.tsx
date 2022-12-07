@@ -59,7 +59,7 @@ function Plugin(props:
 
       <Textbox
         {...useInitialFocus()}
-        placeholder='Type URL'
+        placeholder='Paste layer, page or web URL'
         value={url}
         onValueInput={setUrl}
         validateOnBlur={(url) => {

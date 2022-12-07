@@ -5,12 +5,12 @@ const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, useEffe
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
 import { emit, on, showUI } from '@create-figma-plugin/utilities'
-import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, EVENT_SELECTION_SET, EVENT_VIEW_SELECTED, EVENT_ENABLE_NODE_BUTTON } from './constants'
-import { LINK_ICON } from './link_icon'
+import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, EVENT_SELECTION_SET, EVENT_VIEW_SELECTED, EVENT_ENABLE_NODE_BUTTON, WINDOW_TITLE } from './constants'
 import { TargetResolver as TargetFactory } from './targets/targetFactory'
 import { Target, TargetType } from './targets/target'
 import { EmptyTarget } from "./targets/EmptyTarget"
 import { Navigator } from './targets/navigator'
+import { SETTINGS_ICON } from './icons/settings_icon'
 
 export default function () {
   figma.skipInvisibleInstanceChildren = true
@@ -29,7 +29,7 @@ function Button() {
   function showSettingsUi(message?: string, errorMessage?: string): Promise<void> {
     return new Promise<void>(() => {
       showUI(
-        { title: 'Edit URL', height: 300, width: 240 },
+        { title: WINDOW_TITLE, height: 300, width: 240 },
         {
           label: label,
           url: target.url,
@@ -99,9 +99,14 @@ function Button() {
       })
     )
     figma.on('selectionchange', () => {
-      let selection = figma.currentPage.selection
-      emit(EVENT_ENABLE_NODE_BUTTON, { isEnabled: selection.length > 0 })
-    }) 
+      try {
+        let selection = figma.currentPage.selection
+        emit(EVENT_ENABLE_NODE_BUTTON, { isEnabled: selection.length > 0 })
+      } catch (e) {
+        /* This event throws an error if selection changes 
+        when no UI is open, so we ignore the error */
+      }
+    })
   }
 
   function removeListeners() {
@@ -120,6 +125,7 @@ function Button() {
         resolve()
       })
       .catch((message: any) => {
+        console.log('error: ' + message)
         message = message ? message : ''
         showSettingsUi('', message)
         figma.notify(message)
@@ -158,7 +164,7 @@ function Button() {
         itemType: 'action',
         tooltip: 'Edit URL',
         propertyName: 'edit',
-        icon: LINK_ICON
+        icon: SETTINGS_ICON
       },
     ],
     (event) => { 
