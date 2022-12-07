@@ -5,7 +5,7 @@ const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, useEffe
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
 import { emit, on, showUI } from '@create-figma-plugin/utilities'
-import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, MSG_SET_URL, MSG_GOTO_LAYER, MSG_OPEN_LINK, MSG_GOTO_VIEW, MSG_GOTO_PAGE, EVENT_SELECTION_SET, EVENT_VIEW_SELECTED, EVENT_ENABLE_NODE_BUTTON } from './constants'
+import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, EVENT_SELECTION_SET, EVENT_VIEW_SELECTED, EVENT_ENABLE_NODE_BUTTON } from './constants'
 import { LINK_ICON } from './link_icon'
 import { TargetResolver as TargetFactory } from './targets/targetFactory'
 import { Target, TargetType } from './targets/target'
@@ -24,7 +24,7 @@ function Button() {
   const [size, setSize] = useSyncedState('size', Sizes.getDefaultSize())
   const targetFactory = new TargetFactory()
   const navigator = new Navigator()
-  let listeners: (() => void)[] = []
+  const listeners: (() => void)[] = []
 
   function showSettingsUi(message?: string, errorMessage?: string): Promise<void> {
     return new Promise<void>(() => {
@@ -112,10 +112,6 @@ function Button() {
     figma.off('selectionchange', () => {})
   }
 
-  function isLabelSet(): boolean {
-    return label.length > 0
-  }
-
   function handleClick(): Promise<void> {
     return new Promise<void>((resolve) => {
       navigator.navigateTo(target)
@@ -185,15 +181,7 @@ function Button() {
   )
 
   function getButtonLabel(): string {
-    let type = target.type
-    switch (type) {
-      case TargetType.NODE: return isLabelSet() ? label : MSG_GOTO_LAYER
-      case TargetType.PAGE: return isLabelSet() ? label : MSG_GOTO_PAGE
-      case TargetType.VIEW: return isLabelSet() ? label : MSG_GOTO_VIEW
-      case TargetType.WEB: return isLabelSet() ? label : MSG_OPEN_LINK
-      case TargetType.EMPTY: 
-      default: return MSG_SET_URL
-    }
+    return label.length > 0 ? label : target.label
   }
 
   return (

@@ -10,4 +10,6 @@ export interface Target {
 
   readonly message: string
 
+  readonly label: string
+
 }

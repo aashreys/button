@@ -11,7 +11,7 @@ import {
 import { emit, on } from '@create-figma-plugin/utilities'
 import { h } from 'preact'
 import { useEffect, useState } from 'preact/hooks'
-import { BTN_NAVIGATE_SELECTION, BTN_NAVIGATE_VIEW, EVENT_ENABLE_NODE_BUTTON, EVENT_LABEL_UPDATED, EVENT_SELECTION_SET, EVENT_URL_UPDATED, EVENT_VIEW_SELECTED } from './constants'
+import { EVENT_ENABLE_NODE_BUTTON, EVENT_LABEL_UPDATED, EVENT_SELECTION_SET, EVENT_URL_UPDATED, EVENT_VIEW_SELECTED } from './constants'
 
 function Plugin(props: 
   { label: string, 
@@ -76,12 +76,12 @@ function Plugin(props:
           disabled={!enableNodeButton}
           secondary={!enableNodeButton}
           onClick={() => emit(EVENT_SELECTION_SET)}>
-          {BTN_NAVIGATE_SELECTION}
+          {'Selection ->'}
         </Button>
 
         <Button
           onClick={() => emit(EVENT_VIEW_SELECTED)}>
-          {BTN_NAVIGATE_VIEW}
+          {'Current View ->'}
         </Button>
 
       </Inline>
