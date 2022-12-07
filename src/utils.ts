@@ -1,4 +1,4 @@
-import { computeMaximumBounds, getAbsolutePosition } from "@create-figma-plugin/utilities"
+import { computeMaximumBounds } from "@create-figma-plugin/utilities"
 
 export function getPage(node: SceneNode | PageNode): PageNode {
   let page
@@ -36,16 +36,16 @@ export function getBounds(nodes: SceneNode[]): Rect {
   }
 }
 
-export function smoothScrollToNodes(nodes: SceneNode[], time: number): Promise<void> {
+export function smoothScrollToNodes(nodes: SceneNode[], zoomScale: number, time: number): Promise<void> {
   let rect: Rect = getBounds(nodes)
-  return smoothScrollToRect(rect, 1.2, time)
+  return smoothScrollToRect(rect, zoomScale, time)
 }
 
-export function smoothScrollToRect(rect: Rect, zoomMultiplier: number, time: number): Promise<void> {
+export function smoothScrollToRect(rect: Rect, zoomScale: number, time: number): Promise<void> {
   let x = rect.x + rect.width / 2
   let y = rect.y + rect.height / 2
-  let zoom1 = (figma.viewport.bounds.width * figma.viewport.zoom) / (rect.width * zoomMultiplier)
-  let zoom2 = (figma.viewport.bounds.height * figma.viewport.zoom) / (rect.height * zoomMultiplier)
+  let zoom1 = (figma.viewport.bounds.width * figma.viewport.zoom) / (rect.width * zoomScale)
+  let zoom2 = (figma.viewport.bounds.height * figma.viewport.zoom) / (rect.height * zoomScale)
   let zoom = zoom1 < zoom2 ? zoom1 : zoom2
   return smoothScrollToPoint(x, y, zoom, time)
 }

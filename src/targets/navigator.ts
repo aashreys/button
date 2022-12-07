@@ -39,9 +39,11 @@ export class Navigator {
        
       if (nodes.length > 0 && isSamePage) {
         figma.currentPage = getPage(nodes[0] as SceneNode)
-        smoothScrollToNodes(nodes as SceneNode[], 300).then(() => {
-          resolve()
-        })
+        smoothScrollToNodes(
+          nodes as SceneNode[],
+          this.getZoomScale(),
+          300
+        ).then(() => { resolve() })
       }
       else {
         reject(isSamePage ? MSG_LAYER_NOT_FOUND : MSG_NOT_SAME_PAGE)
@@ -75,6 +77,13 @@ export class Navigator {
         reject(MSG_LAYER_NOT_FOUND)
       }
     })
+  }
+
+  private getZoomScale() {
+    if (figma.editorType === 'figjam') {
+      return 1.4
+    }
+    return 1.2
   }
 
 }
