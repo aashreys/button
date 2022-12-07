@@ -1,5 +1,11 @@
-import { MSG_LAYER_NOT_FOUND, SCHEME_NODE, SCHEME_PAGE, SCHEME_VIEW } from "../constants";
-import { EmptyTarget, NodeTarget, PageTarget, Target, ViewTarget, WebTarget } from "./target";
+import { computeMaximumBounds } from "@create-figma-plugin/utilities";
+import { ERROR_EMPTY_NODES, MSG_LAYER_NOT_FOUND, SCHEME_NODE, SCHEME_PAGE, SCHEME_VIEW } from "../constants";
+import { Target } from "./target";
+import { NodeTarget } from "./NodeTarget";
+import { ViewTarget } from "./ViewTarget";
+import { PageTarget } from "./PageTarget";
+import { WebTarget } from "./WebTarget";
+import { EmptyTarget } from "./EmptyTarget";
 
 export class TargetResolver {
 
@@ -8,14 +14,12 @@ export class TargetResolver {
     if (this.isThisFigmaFile(url) && url.toLowerCase().includes('node-id=')) {
       // URL points to this file, could be a PageNode or SceneNode
       let nodeId = this.getNodeIdFromFigmaUrl(url)
-      return this.fromNode(nodeId as string) 
+      return this.fromNodes([nodeId as string]) 
     }
 
     if (url.includes(SCHEME_NODE)) {
-      let nodeId = url.replace(SCHEME_NODE, '')
-      let node = figma.getNodeById(nodeId) as SceneNode
-      if (node) return new NodeTarget(node)
-      else throw new Error(MSG_LAYER_NOT_FOUND)
+      let nodeIds = url.replace(SCHEME_NODE, '').split(',')
+      return this.fromNodes(nodeIds)
     }
 
     if (url.includes(SCHEME_PAGE)) {
@@ -48,17 +52,30 @@ export class TargetResolver {
 
   }
 
-  public fromNode(nodeId: string): Target {
+  public fromNodes(nodeIds: string[]): Target {
+    if (nodeIds.length === 1) return this.fromSingleNode(nodeIds[0])
+    if (nodeIds.length > 1) return this.fromMultipleNodes(nodeIds)
+    throw new Error(ERROR_EMPTY_NODES)
+  }
+
+  private fromSingleNode(nodeId: string): Target {
     let node = figma.getNodeById(nodeId)
     if (node && node.type === 'PAGE') {
       return new PageTarget(node as PageNode)
     }
     else if (node) {
-      return new NodeTarget(node as SceneNode)
+      return new NodeTarget([node as SceneNode])
     }
     else {
       throw new Error(MSG_LAYER_NOT_FOUND)
     }
+  }
+
+  private fromMultipleNodes(nodeIds: string[]): Target {
+    let nodes = nodeIds.map((id) => {
+      return figma.getNodeById(id)
+    }).filter((node) => { return node !== null })
+    return new NodeTarget(nodes as SceneNode[])
   }
 
   public fromView(page: PageNode, x: number, y: number, zoom: number) {

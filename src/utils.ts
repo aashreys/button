@@ -1,4 +1,4 @@
-import { getAbsolutePosition } from "@create-figma-plugin/utilities"
+import { computeMaximumBounds, getAbsolutePosition } from "@create-figma-plugin/utilities"
 
 export function getPage(node: SceneNode | PageNode): PageNode {
   let page
@@ -10,17 +10,52 @@ export function getPage(node: SceneNode | PageNode): PageNode {
   return page
 }
 
-export async function smoothScrollToNode(node: SceneNode, time: number): Promise<void> {
-  let nodePosition = getAbsolutePosition(node)
-  let x = nodePosition.x + node.width / 2
-  let y = nodePosition.y + node.height / 2
-  let zoomMultiplier = 1.2
+export function isOnSamePage(nodes: SceneNode[]): boolean {
+  let lastPage: PageNode | null = null
+  let isOnSamePage = true
+
+  for (let node of nodes) {
+    let page = getPage(node as SceneNode)
+    if (lastPage) {
+      if (lastPage.id === page.id) {
+        isOnSamePage = true
+      } else {
+        isOnSamePage = false
+        break
+      }
+    }
+    lastPage = page
+  }
+
+  return isOnSamePage
+}
+
+export function getBounds(nodes: SceneNode[]): Rect {
+  let bounds = computeMaximumBounds(nodes)
+  let width = bounds[1].x - bounds[0].x
+  let height = bounds[1].y - bounds[0].y
+  return {
+    x: bounds[0].x,
+    y: bounds[0].y,
+    width: width,
+    height: height
+  }
+}
+
+export async function smoothScrollToNodes(nodes: SceneNode[], time: number): Promise<void> {
+  let rect: Rect = getBounds(nodes)
+  return smoothScrollToRect(rect, 1.2, time)
+}
+
+export function smoothScrollToRect(rect: Rect, zoomMultiplier: number, time: number) {
+  let x = rect.x + rect.width / 2
+  let y = rect.y + rect.height / 2
   let zoom: number
-  if (node.width > node.height) {
-    zoom = (figma.viewport.bounds.width * figma.viewport.zoom) / (node.width * zoomMultiplier)
+  if (rect.width > rect.height) {
+    zoom = (figma.viewport.bounds.width * figma.viewport.zoom) / (rect.width * zoomMultiplier)
   }
   else {
-    zoom = (figma.viewport.bounds.height * figma.viewport.zoom) / (node.height * zoomMultiplier)
+    zoom = (figma.viewport.bounds.height * figma.viewport.zoom) / (rect.height * zoomMultiplier)
   }
   return smoothScrollToPoint(x, y, zoom, time)
 }

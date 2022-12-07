@@ -5,10 +5,11 @@ const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, useEffe
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
 import { emit, on, showUI } from '@create-figma-plugin/utilities'
-import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, MSG_SET_URL, MSG_GOTO_LAYER, MSG_OPEN_LINK, MSG_GOTO_VIEW, MSG_GOTO_PAGE, EVENT_NODE_SELECTED, EVENT_VIEW_SELECTED, EVENT_ENABLE_NODE_BUTTON } from './constants'
+import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, MSG_SET_URL, MSG_GOTO_LAYER, MSG_OPEN_LINK, MSG_GOTO_VIEW, MSG_GOTO_PAGE, EVENT_SELECTION_SET, EVENT_VIEW_SELECTED, EVENT_ENABLE_NODE_BUTTON } from './constants'
 import { LINK_ICON } from './link_icon'
 import { TargetResolver as TargetFactory } from './targets/targetFactory'
-import { EmptyTarget, Target, TargetType } from './targets/target'
+import { Target, TargetType } from './targets/target'
+import { EmptyTarget } from "./targets/EmptyTarget"
 import { Navigator } from './targets/navigator'
 
 export default function () {
@@ -67,24 +68,16 @@ function Button() {
           })
         }
       }),
-      on(EVENT_NODE_SELECTED, () => {
+      on(EVENT_SELECTION_SET, () => {
         let selection = figma.currentPage.selection
-        if (selection.length === 1) {
-          let node = selection[0]
-          try {
-            let target = targetFactory.fromNode(node.id)
-            setTarget(target)
-            emit(EVENT_URL_UPDATED, {
-              url: target.url,
-              message: target.message,
-            })
-          } 
-          catch (e: any) {
-            console.error(e.message)
-          }          
-        }
-        else {
-          figma.notify('HELP')
+        if (selection.length > 0) {
+          let nodeIds = selection.map((node) => { return node.id })
+          let target = targetFactory.fromNodes(nodeIds)
+          setTarget(target)
+          emit(EVENT_URL_UPDATED, {
+            url: target.url,
+            message: target.message,
+          })
         }
       }),
       on(EVENT_VIEW_SELECTED, () => {
@@ -107,11 +100,7 @@ function Button() {
     )
     figma.on('selectionchange', () => {
       let selection = figma.currentPage.selection
-      if (selection.length === 1) {
-        emit(EVENT_ENABLE_NODE_BUTTON, { isEnabled: true })
-      } else {
-        emit(EVENT_ENABLE_NODE_BUTTON, { isEnabled: false })
-      }
+      emit(EVENT_ENABLE_NODE_BUTTON, { isEnabled: selection.length > 0 })
     }) 
   }
 
@@ -120,6 +109,7 @@ function Button() {
       let removeCallback = listeners.pop()
       if (removeCallback) removeCallback()
     }
+    figma.off('selectionchange', () => {})
   }
 
   function isLabelSet(): boolean {
@@ -133,8 +123,8 @@ function Button() {
         figma.closePlugin()
         resolve()
       })
-      .catch((e: any) => {
-        let message = e ? e.message : ''
+      .catch((message: any) => {
+        message = message ? message : ''
         showSettingsUi('', message)
         figma.notify(message)
       })

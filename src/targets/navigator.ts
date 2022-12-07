@@ -1,6 +1,10 @@
-import { MSG_LAYER_NOT_FOUND } from "../constants";
-import { getPage, smoothScrollToNode, smoothScrollToPoint } from "../utils";
-import { NodeTarget, PageTarget, Target, TargetType, ViewTarget, WebTarget } from "./target";
+import { MSG_LAYER_NOT_FOUND, MSG_NOT_SAME_PAGE } from "../constants";
+import { getPage, isOnSamePage, smoothScrollToNodes, smoothScrollToPoint } from "../utils";
+import { Target, TargetType } from "./target";
+import { NodeTarget } from "./NodeTarget";
+import { ViewTarget } from "./ViewTarget";
+import { PageTarget } from "./PageTarget";
+import { WebTarget } from "./WebTarget";
 
 export class Navigator {
 
@@ -27,15 +31,22 @@ export class Navigator {
 
   private navigateToNodeTarget(target: NodeTarget): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      let node = figma.getNodeById(target.nodeId)
-      if (node) {
-        figma.currentPage = getPage(node as SceneNode)
-        smoothScrollToNode(node as SceneNode, 300).then(() => {
+      let nodes = target.nodeIds.map((id) => {
+        return figma.getNodeById(id)
+      }).filter((node) => { return node !== null })
+
+      console.log(nodes)
+
+      let isSamePage = isOnSamePage(nodes as SceneNode[])
+      
+      if (nodes.length > 0 && isSamePage) {
+        figma.currentPage = getPage(nodes[0] as SceneNode)
+        smoothScrollToNodes(nodes as SceneNode[], 300).then(() => {
           resolve()
         })
       }
       else {
-        reject(MSG_LAYER_NOT_FOUND)
+        reject(isSamePage ? MSG_LAYER_NOT_FOUND : MSG_NOT_SAME_PAGE)
       }
     })
   }
