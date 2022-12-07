@@ -12,7 +12,7 @@ export class WebTarget implements Target {
     this.type = TargetType.WEB;
     this.url = url;
     this.message = '';
-    this.label = 'Open URL 🔗'
+    this.label = 'Open link 🔗'
   }
 
 }
