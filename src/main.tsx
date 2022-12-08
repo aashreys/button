@@ -13,7 +13,7 @@ import { Navigator } from './targets/navigator'
 import { SETTINGS_ICON } from './icons/settings_icon'
 
 const WIDTH = 240
-const HEIGHT = 208
+const HEIGHT = 256
 const LATEST_VERSION = 2
 
 export default function () {
@@ -192,8 +192,8 @@ function Button() {
       },
       {
         itemType: 'action',
-        tooltip: 'Edit URL',
-        propertyName: 'edit',
+        tooltip: 'Open Settings',
+        propertyName: 'settings',
         icon: SETTINGS_ICON
       },
     ],
@@ -210,7 +210,7 @@ function Button() {
         ) as Size
         setSize(size)
       }
-      if (event.propertyName === 'edit') {
+      if (event.propertyName === 'settings') {
         return showSettingsUi()
       }
     },

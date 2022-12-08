@@ -12,7 +12,7 @@ export class EmptyTarget implements Target {
     this.type = TargetType.EMPTY;
     this.url = '';
     this.message = '';
-    this.label = 'Set URL ⚙️'
+    this.label = 'Configure ⚙️'
   }
 
 }

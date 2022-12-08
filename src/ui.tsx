@@ -65,6 +65,10 @@ function Plugin(props:
         }}
         variant="border" />
 
+      <VerticalSpace space="large" />
+
+      <Text>Open a URL...</Text>
+
       <VerticalSpace space="small" />
 
       <Textbox
@@ -79,6 +83,10 @@ function Plugin(props:
         variant="border" />
 
       <VerticalSpace space="large" />
+
+      <Text>Or navigate to selected layers...</Text>
+
+      <VerticalSpace space="small" />
 
       <Columns space="extraSmall">
 
