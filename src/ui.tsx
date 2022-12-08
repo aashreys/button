@@ -9,7 +9,7 @@ import {
   Columns
 } from '@create-figma-plugin/ui'
 import { emit, on } from '@create-figma-plugin/utilities'
-import { Fragment, h } from 'preact'
+import { h } from 'preact'
 import { useEffect, useState } from 'preact/hooks'
 import { EVENT_ENABLE_NODE_BUTTON, EVENT_LABEL_UPDATED, EVENT_SELECTION_SET, EVENT_URL_UPDATED, EVENT_VIEW_SELECTED } from './constants'
 
@@ -22,8 +22,6 @@ function Plugin(props:
 
   const [label, setLabel] = useState(props.label)
   const [url, setUrl] = useState(props.url)
-  const [message, setMessage] = useState(props.message)
-  const [errorMessage, setErrorMessage] = useState(props.errorMessage)
   const [enableNodeButton, setEnableNodeButton] = useState(false)
 
   const listeners: (() => void)[] = []
@@ -31,8 +29,6 @@ function Plugin(props:
   function addListeners() {
     listeners.push(on(EVENT_URL_UPDATED, (data) => {
       setUrl(data.url)
-      setMessage(data.message ? data.message : '')
-      setErrorMessage(data.errorMessage ? data.errorMessage : '')
     }))
     listeners.push(on(EVENT_ENABLE_NODE_BUTTON, (data) => {
       setEnableNodeButton(data.isEnabled)
@@ -91,7 +87,6 @@ function Plugin(props:
       <Columns space="extraSmall">
 
         <Button
-          disabled={!enableNodeButton}
           secondary={!enableNodeButton}
           fullWidth
           onClick={() => emit(EVENT_SELECTION_SET)}>
@@ -105,29 +100,6 @@ function Plugin(props:
         </Button>
 
       </Columns>
-
-      {
-        message.length > 0 &&
-        <Fragment>
-            <VerticalSpace space="large" />
-            <Text
-              align="center">
-              {message}
-            </Text>
-        </Fragment>
-      }
-
-      {
-        errorMessage.length > 0 &&
-        <Fragment>
-            <VerticalSpace space="large" />
-            <Text
-              align="center"
-              style={{ color: 'var(--figma-color-text-danger)' }}>
-              {errorMessage}
-            </Text>
-        </Fragment>
-      }
 
       <VerticalSpace space="extraLarge" />
 

@@ -8,6 +8,8 @@ export const EVENT_ENABLE_NODE_BUTTON = 'ENABLE_NODE_BUTTON'
 export const MSG_LAYER_NOT_FOUND = 'Layers may have been deleted. Please update selection.'
 export const MSG_NOT_SAME_PAGE = 'Layers are no longer on the same page. Please update selection.'
 
+export const MSG_SELECT_LAYERS = 'Select one or many layers and try again'
+
 export const SCHEME_NODE = 'button:goto:node -> '
 export const SCHEME_PAGE = 'button:goto:page -> '
 export const SCHEME_VIEW = 'button:goto:view -> '

@@ -1,11 +1,11 @@
 /** @jsx figma.widget.h */
 
 const { widget } = figma
-const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, useEffect } = widget
+const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, useEffect, useWidgetId } = widget
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
 import { emit, on, showUI } from '@create-figma-plugin/utilities'
-import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, EVENT_SELECTION_SET, EVENT_VIEW_SELECTED, EVENT_ENABLE_NODE_BUTTON, WINDOW_TITLE } from './constants'
+import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, EVENT_SELECTION_SET, EVENT_VIEW_SELECTED, EVENT_ENABLE_NODE_BUTTON, WINDOW_TITLE, MSG_SELECT_LAYERS } from './constants'
 import { TargetResolver as TargetFactory } from './targets/targetFactory'
 import { Target, TargetType } from './targets/target'
 import { EmptyTarget } from "./targets/EmptyTarget"
@@ -13,7 +13,7 @@ import { Navigator } from './targets/navigator'
 import { SETTINGS_ICON } from './icons/settings_icon'
 
 const WIDTH = 240
-const HEIGHT = 256
+const HEIGHT = 212
 const LATEST_VERSION = 2
 
 export default function () {
@@ -37,6 +37,9 @@ function Button() {
   const targetFactory = new TargetFactory()
   const navigator = new Navigator()
   const listeners: (() => void)[] = []
+  const widgetId = useWidgetId()
+
+  let notifyHandler: NotificationHandler | null = null
 
   /* Migrate state to latest version, whenever 
   Figma supports updating inserted widgets */
@@ -52,7 +55,7 @@ function Button() {
     }
   }
 
-  function showSettingsUi(message?: string, errorMessage?: string): Promise<void> {
+  function showSettingsUi(): Promise<void> {
     return new Promise<void>(() => {  
       showUI(
         { 
@@ -62,9 +65,7 @@ function Button() {
         },
         {
           label: label,
-          url: target.url,
-          message: message ? message : '',
-          errorMessage: errorMessage ? errorMessage : ''
+          url: target.url
         }
       )
     })
@@ -86,29 +87,28 @@ function Button() {
             /* Only update the target if it is 
             different from the current target */
             setTarget(newTarget)
-            emit(EVENT_URL_UPDATED, {
-              url: newTarget.url,
-              message: newTarget.message,
-            })
+            emit(EVENT_URL_UPDATED, { url: newTarget.url })
+            notify(newTarget.message)
           }
         }
         catch (e: any) {
-          emit(EVENT_URL_UPDATED, {
-            url: target.url,
-            errorMessage: e.message
-          })
+          emit(EVENT_URL_UPDATED, { url: target.url })
+          notify(e.message, true)
         }
       }),
       on(EVENT_SELECTION_SET, () => {
-        let selection = figma.currentPage.selection
+        let selection = figma.currentPage.selection.filter((node) => {
+          return node.id !== widgetId
+        })
         if (selection.length > 0) {
           let nodeIds = selection.map((node) => { return node.id })
           let target = targetFactory.fromNodes(nodeIds)
           setTarget(target)
-          emit(EVENT_URL_UPDATED, {
-            url: target.url,
-            message: target.message,
-          })
+          emit(EVENT_URL_UPDATED, { url: target.url })
+          notify(target.message)
+        }
+        else {
+          notify(MSG_SELECT_LAYERS)
         }
       }),
       on(EVENT_VIEW_SELECTED, () => {
@@ -120,10 +120,8 @@ function Button() {
             figma.viewport.zoom,
           )
           setTarget(target)
-          emit(EVENT_URL_UPDATED, {
-            url: target.url,
-            message: target.message,
-          })
+          emit(EVENT_URL_UPDATED, { url: target.url })
+          notify(target.message)
         } catch (e: any) {
           console.error(e.message)
         }
@@ -156,9 +154,8 @@ function Button() {
         resolve()
       })
       .catch((message: any) => {
-        message = message ? message : ''
-        showSettingsUi('', message)
-        figma.notify(message)
+        showSettingsUi()
+        notify(message ? message : '', true)
       })
     })
   }
@@ -222,6 +219,11 @@ function Button() {
     } else {
       return label.length > 0 ? label : target.label
     }
+  }
+
+  function notify(message: string, isError?: boolean) {
+    if (notifyHandler) notifyHandler.cancel()
+    notifyHandler = figma.notify(message, { error: isError })
   }
 
   return (

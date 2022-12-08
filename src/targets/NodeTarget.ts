@@ -15,7 +15,7 @@ export class NodeTarget implements Target {
       this.type = TargetType.NODE
       this.message = nodes.length > 1 
       ? `Button will navigate to selected layers`
-      : `Button will navigate to layer ${nodes[0].name}`
+      : `Button will navigate to ${nodes[0].name}`
       this.nodeIds = nodes.map((node) => { return node.id })
       this.url = SCHEME_NODE + this.nodeIds.join(',')
       this.label = nodes.length > 1 
