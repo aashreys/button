@@ -5,7 +5,7 @@ const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, useEffe
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
 import { emit, on, showUI } from '@create-figma-plugin/utilities'
-import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, EVENT_SELECTION_SET, EVENT_VIEW_SELECTED, EVENT_ENABLE_NODE_BUTTON, WINDOW_TITLE, EVENT_HEIGHT_REQUESTED } from './constants'
+import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, EVENT_SELECTION_SET, EVENT_VIEW_SELECTED, EVENT_ENABLE_NODE_BUTTON, WINDOW_TITLE } from './constants'
 import { TargetResolver as TargetFactory } from './targets/targetFactory'
 import { Target, TargetType } from './targets/target'
 import { EmptyTarget } from "./targets/EmptyTarget"
@@ -73,19 +73,8 @@ function Button() {
   useEffect(() => {
     migrate(version)
     addListeners()
-    requestHeight()
     return () => removeListeners()
   })
-
-  function requestHeight() {
-    try {
-      emit(EVENT_HEIGHT_REQUESTED)
-    }
-    catch {
-      /* This event throws an error when emitted 
-      while no UI is open, so we ignore the error */
-    }
-  }
 
   function addListeners() {
     listeners.push(
@@ -138,10 +127,6 @@ function Button() {
         } catch (e: any) {
           console.error(e.message)
         }
-      }),
-      on(EVENT_HEIGHT_REQUESTED, (data) => {
-        let height = data.height
-        figma.ui.resize(WIDTH, height)
       })
     )
     figma.on('selectionchange', () => {

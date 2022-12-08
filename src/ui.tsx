@@ -11,7 +11,7 @@ import {
 import { emit, on } from '@create-figma-plugin/utilities'
 import { Fragment, h } from 'preact'
 import { useEffect, useState } from 'preact/hooks'
-import { EVENT_ENABLE_NODE_BUTTON, EVENT_LABEL_UPDATED, EVENT_SELECTION_SET, EVENT_URL_UPDATED, EVENT_VIEW_SELECTED, EVENT_HEIGHT_REQUESTED } from './constants'
+import { EVENT_ENABLE_NODE_BUTTON, EVENT_LABEL_UPDATED, EVENT_SELECTION_SET, EVENT_URL_UPDATED, EVENT_VIEW_SELECTED } from './constants'
 
 function Plugin(props: 
   { label: string, 
@@ -36,10 +36,6 @@ function Plugin(props:
     }))
     listeners.push(on(EVENT_ENABLE_NODE_BUTTON, (data) => {
       setEnableNodeButton(data.isEnabled)
-    }))
-    listeners.push(on(EVENT_HEIGHT_REQUESTED, () => {
-      let height = document.getElementById('create-figma-plugin')?.clientHeight
-      emit(EVENT_HEIGHT_REQUESTED, { height })
     }))
   }
 
