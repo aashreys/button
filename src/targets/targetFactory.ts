@@ -1,11 +1,12 @@
 import { computeMaximumBounds } from "@create-figma-plugin/utilities";
-import { ERROR_EMPTY_NODES, MSG_LAYER_NOT_FOUND, SCHEME_NODE, SCHEME_PAGE, SCHEME_VIEW } from "../constants";
+import { ERROR_EMPTY_NODES, MSG_LAYER_NOT_FOUND, MSG_NOT_SAME_PAGE, SCHEME_NODE, SCHEME_PAGE, SCHEME_VIEW } from "../constants";
 import { Target } from "./target";
 import { NodeTarget } from "./NodeTarget";
 import { ViewTarget } from "./ViewTarget";
 import { PageTarget } from "./PageTarget";
 import { WebTarget } from "./WebTarget";
 import { EmptyTarget } from "./EmptyTarget";
+import { isOnSamePage } from "../utils";
 
 export class TargetResolver {
 
@@ -82,8 +83,19 @@ export class TargetResolver {
   private fromMultipleNodes(nodeIds: string[]): Target {
     let nodes = nodeIds.map((id) => {
       return figma.getNodeById(id)
-    }).filter((node) => { return node !== null })
-    return new NodeTarget(nodes as SceneNode[])
+    }).filter((node) => { return node !== null }) as SceneNode[]
+
+    if (nodes.length > 0 ) {
+      let isSamePage = isOnSamePage(nodes)
+      if (isSamePage) {
+        return new NodeTarget(nodes as SceneNode[])
+      } else {
+        throw new Error(MSG_NOT_SAME_PAGE)
+      }
+    }
+    else {
+      throw new Error(MSG_LAYER_NOT_FOUND)
+    }
   }
 
   public fromView(page: PageNode, x: number, y: number, zoom: number) {

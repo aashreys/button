@@ -33,20 +33,22 @@ export class Navigator {
     return new Promise<void>((resolve, reject) => {
       let nodes = target.nodeIds.map((id) => {
         return figma.getNodeById(id)
-      }).filter((node) => { return node !== null })
-
-      let isSamePage = isOnSamePage(nodes as SceneNode[])
-       
-      if (nodes.length > 0 && isSamePage) {
-        figma.currentPage = getPage(nodes[0] as SceneNode)
-        smoothScrollToNodes(
-          nodes as SceneNode[],
-          this.getZoomScale(),
-          300
-        ).then(() => { resolve() })
+      }).filter((node) => { return node !== null }) as SceneNode[]
+      if (nodes.length > 0) {
+        let isSamePage = isOnSamePage(nodes)
+        if (isSamePage) {
+          figma.currentPage = getPage(nodes[0] as SceneNode)
+          smoothScrollToNodes(
+            nodes as SceneNode[],
+            this.getZoomScale(),
+            300
+          ).then(() => { resolve() })
+        } else {
+          reject(MSG_NOT_SAME_PAGE)
+        }
       }
       else {
-        reject(isSamePage ? MSG_LAYER_NOT_FOUND : MSG_NOT_SAME_PAGE)
+        reject(MSG_LAYER_NOT_FOUND)
       }
     })
   }
