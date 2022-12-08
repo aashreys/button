@@ -155,7 +155,7 @@ function Button() {
       })
       .catch((message: any) => {
         showSettingsUi()
-        notify(message ? message : '', true)
+        message ? notify(message) : {}
       })
     })
   }
