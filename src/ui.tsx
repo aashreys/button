@@ -4,28 +4,57 @@ import {
   Textbox,
   useInitialFocus,
   VerticalSpace,
-  Text
+  Text,
+  Button,
+  Columns
 } from '@create-figma-plugin/ui'
 import { emit, on } from '@create-figma-plugin/utilities'
 import { Fragment, h } from 'preact'
-import { useState } from 'preact/hooks'
-import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED } from './constants'
+import { useEffect, useState } from 'preact/hooks'
+import { EVENT_ENABLE_NODE_BUTTON, EVENT_LABEL_UPDATED, EVENT_SELECTION_SET, EVENT_URL_UPDATED, EVENT_VIEW_SELECTED } from './constants'
 
-function Plugin(props: { label: string, url: string, message: string }) {
+function Plugin(props: 
+  { label: string, 
+    url: string, 
+    message: string, 
+    errorMessage: string 
+  }) {
 
   const [label, setLabel] = useState(props.label)
   const [url, setUrl] = useState(props.url)
   const [message, setMessage] = useState(props.message)
+  const [errorMessage, setErrorMessage] = useState(props.errorMessage)
+  const [enableNodeButton, setEnableNodeButton] = useState(false)
 
-  on(EVENT_URL_UPDATED, (data) => {
-    setUrl(data.url) 
-    setMessage(data.message)
-  })
+  const listeners: (() => void)[] = []
+
+  function addListeners() {
+    listeners.push(on(EVENT_URL_UPDATED, (data) => {
+      setUrl(data.url)
+      setMessage(data.message ? data.message : '')
+      setErrorMessage(data.errorMessage ? data.errorMessage : '')
+    }))
+    listeners.push(on(EVENT_ENABLE_NODE_BUTTON, (data) => {
+      setEnableNodeButton(data.isEnabled)
+    }))
+  }
+
+  function removeListeners() {
+    while (listeners.length > 0) {
+      let removeCallback = listeners.pop()
+      if (removeCallback) removeCallback()
+    }
+  }
+
+  useEffect(() => {
+    addListeners()
+    return () => removeListeners()
+  }, [])
 
   return (
     <Container space="small">
 
-      <VerticalSpace space="small" />
+      <VerticalSpace space="large" />
 
       <Textbox
         placeholder='Type label'
@@ -36,11 +65,15 @@ function Plugin(props: { label: string, url: string, message: string }) {
         }}
         variant="border" />
 
+      <VerticalSpace space="large" />
+
+      <Text>Open a URL...</Text>
+
       <VerticalSpace space="small" />
 
       <Textbox
         {...useInitialFocus()}
-        placeholder='Type or paste web or Figma URL'
+        placeholder='Paste layer, page or web URL'
         value={url}
         onValueInput={setUrl}
         validateOnBlur={(url) => {
@@ -49,16 +82,55 @@ function Plugin(props: { label: string, url: string, message: string }) {
         }}
         variant="border" />
 
+      <VerticalSpace space="large" />
+
+      <Text>Or navigate to selected layers...</Text>
+
       <VerticalSpace space="small" />
+
+      <Columns space="extraSmall">
+
+        <Button
+          disabled={!enableNodeButton}
+          secondary={!enableNodeButton}
+          fullWidth
+          onClick={() => emit(EVENT_SELECTION_SET)}>
+          {'Selection ->'}
+        </Button>
+
+        <Button
+          fullWidth
+          onClick={() => emit(EVENT_VIEW_SELECTED)}>
+          {'Current View ->'}
+        </Button>
+
+      </Columns>
 
       {
         message.length > 0 &&
         <Fragment>
-          <Text>{message}</Text>
-          <VerticalSpace space="small" />
+            <VerticalSpace space="large" />
+            <Text
+              align="center">
+              {message}
+            </Text>
         </Fragment>
       }
-      
+
+      {
+        errorMessage.length > 0 &&
+        <Fragment>
+            <VerticalSpace space="large" />
+            <Text
+              align="center"
+              style={{ color: 'var(--figma-color-text-danger)' }}>
+              {errorMessage}
+            </Text>
+        </Fragment>
+      }
+
+      <VerticalSpace space="extraLarge" />
+
     </Container>
   )
 }
