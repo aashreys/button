@@ -5,7 +5,7 @@ const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, useEffe
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
 import { emit, on, showUI } from '@create-figma-plugin/utilities'
-import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, EVENT_SELECTION_SET, EVENT_VIEW_SELECTED, EVENT_ENABLE_NODE_BUTTON, WINDOW_TITLE, EVENT_HEIGHT_CHANGED } from './constants'
+import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, EVENT_SELECTION_SET, EVENT_VIEW_SELECTED, EVENT_ENABLE_NODE_BUTTON, WINDOW_TITLE, EVENT_HEIGHT_REQUESTED } from './constants'
 import { TargetResolver as TargetFactory } from './targets/targetFactory'
 import { Target, TargetType } from './targets/target'
 import { EmptyTarget } from "./targets/EmptyTarget"
@@ -13,7 +13,7 @@ import { Navigator } from './targets/navigator'
 import { SETTINGS_ICON } from './icons/settings_icon'
 
 const WIDTH = 240
-const HEIGHT = 164
+const HEIGHT = 208
 const LATEST_VERSION = 2
 
 export default function () {
@@ -53,9 +53,13 @@ function Button() {
   }
 
   function showSettingsUi(message?: string, errorMessage?: string): Promise<void> {
-    return new Promise<void>(() => {
+    return new Promise<void>(() => {  
       showUI(
-        { title: WINDOW_TITLE, height: HEIGHT, width: WIDTH },
+        { 
+          title: WINDOW_TITLE, 
+          height: HEIGHT, 
+          width: WIDTH
+        },
         {
           label: label,
           url: target.url,
@@ -69,8 +73,19 @@ function Button() {
   useEffect(() => {
     migrate(version)
     addListeners()
+    requestHeight()
     return () => removeListeners()
   })
+
+  function requestHeight() {
+    try {
+      emit(EVENT_HEIGHT_REQUESTED)
+    }
+    catch {
+      /* This event throws an error when emitted 
+      while no UI is open, so we ignore the error */
+    }
+  }
 
   function addListeners() {
     listeners.push(
@@ -124,7 +139,7 @@ function Button() {
           console.error(e.message)
         }
       }),
-      on(EVENT_HEIGHT_CHANGED, (data) => {
+      on(EVENT_HEIGHT_REQUESTED, (data) => {
         let height = data.height
         figma.ui.resize(WIDTH, height)
       })
@@ -133,7 +148,7 @@ function Button() {
       let selection = figma.currentPage.selection
       try {
         emit(EVENT_ENABLE_NODE_BUTTON, { isEnabled: selection.length > 0 })
-      } catch (e) {
+      } catch {
         /* This event throws an error if selection changes 
         when no UI is open, so we ignore the error */
       }

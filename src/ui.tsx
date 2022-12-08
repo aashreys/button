@@ -10,8 +10,8 @@ import {
 } from '@create-figma-plugin/ui'
 import { emit, on } from '@create-figma-plugin/utilities'
 import { Fragment, h } from 'preact'
-import { useEffect, useLayoutEffect, useState } from 'preact/hooks'
-import { EVENT_ENABLE_NODE_BUTTON, EVENT_LABEL_UPDATED, EVENT_HEIGHT_CHANGED, EVENT_SELECTION_SET, EVENT_URL_UPDATED, EVENT_VIEW_SELECTED } from './constants'
+import { useEffect, useState } from 'preact/hooks'
+import { EVENT_ENABLE_NODE_BUTTON, EVENT_LABEL_UPDATED, EVENT_SELECTION_SET, EVENT_URL_UPDATED, EVENT_VIEW_SELECTED, EVENT_HEIGHT_REQUESTED } from './constants'
 
 function Plugin(props: 
   { label: string, 
@@ -26,25 +26,34 @@ function Plugin(props:
   const [errorMessage, setErrorMessage] = useState(props.errorMessage)
   const [enableNodeButton, setEnableNodeButton] = useState(false)
 
-  useEffect(() => {
-    let removeUrlListener = on(EVENT_URL_UPDATED, (data) => {
+  const listeners: (() => void)[] = []
+
+  function addListeners() {
+    listeners.push(on(EVENT_URL_UPDATED, (data) => {
       setUrl(data.url)
       setMessage(data.message ? data.message : '')
       setErrorMessage(data.errorMessage ? data.errorMessage : '')
-    })
-    let nodeButtonListener = on(EVENT_ENABLE_NODE_BUTTON, (data) => {
+    }))
+    listeners.push(on(EVENT_ENABLE_NODE_BUTTON, (data) => {
       setEnableNodeButton(data.isEnabled)
-    })
-    return () => {
-      removeUrlListener()
-      nodeButtonListener()
-    }
-  }, []);
+    }))
+    listeners.push(on(EVENT_HEIGHT_REQUESTED, () => {
+      let height = document.getElementById('create-figma-plugin')?.clientHeight
+      emit(EVENT_HEIGHT_REQUESTED, { height })
+    }))
+  }
 
-  useLayoutEffect(() => {
-    let height = document.getElementById('create-figma-plugin')?.clientHeight
-    emit(EVENT_HEIGHT_CHANGED, { height: height })
-  })
+  function removeListeners() {
+    while (listeners.length > 0) {
+      let removeCallback = listeners.pop()
+      if (removeCallback) removeCallback()
+    }
+  }
+
+  useEffect(() => {
+    addListeners()
+    return () => removeListeners()
+  }, [])
 
   return (
     <Container space="small">
