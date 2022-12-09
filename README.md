@@ -1,6 +1,6 @@
 # Button
 
-A Figma & FigJam widget to execute simple actions like navigate to a frame or open a link.
+A Figma & FigJam widget to open links and navigate design.
 
 ## Development guide
 
