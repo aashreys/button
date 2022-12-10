@@ -7,28 +7,33 @@ export interface Size {
   cornerRadius: number
   strokeWidth: number
   shadowDepth: number
+  outerPadding: number
 
 }
 
 export module Sizes {
 
-  const SIZE_XS: Size = createSize('Extra Small', 16)
+  const SIZE_ATOMIC: Size = createSize('Atomic', 14)
 
-  const SIZE_SMALL: Size = createSize('Small', 24)
+  const SIZE_TINY: Size = createSize('Tiny', 21)
 
-  const SIZE_MEDIUM: Size = createSize('Medium', 36)
+  const SIZE_SMALL: Size = createSize('Small', 32)
 
-  const SIZE_LARGE: Size = createSize('Large', 48)
+  const SIZE_MEDIUM: Size = createSize('Medium', 48)
 
-  const SIZE_XL: Size = createSize('Extra Large', 64)
+  const SIZE_LARGE: Size = createSize('Large', 72)
 
-  const SIZE_TITANIC: Size = createSize('Titanic', 81)
+  const SIZE_HUGE: Size = createSize('Huge', 108)
 
-  const SIZE_GARGANTUAN: Size = createSize('Gargantuan', 182)
+  const SIZE_TITANIC: Size = createSize('Titanic', 162)
 
-  const SIZE_INTERPLANETARY: Size = createSize('Interplanetary', 410)
+  const SIZE_COLOSSAL: Size = createSize('Colossal', 243)
 
-  const SIZE_INTERGALACTIC: Size = createSize('Intergalactic', 922)
+  const SIZE_PLANETARY: Size = createSize('Planetary', 546)
+
+  const SIZE_GALACTIC: Size = createSize('Galactic', 820)
+
+  const SIZE_COSMIC: Size = createSize('Cosmic', 1230)
 
   function createSize(name: string, size: number): Size {
     return {
@@ -38,25 +43,28 @@ export module Sizes {
       verticalPadding: size / 2,
       cornerRadius: Math.ceil(size / 1.5),
       strokeWidth: Math.ceil(size / 12),
-      shadowDepth: Math.ceil(size / 8)
+      shadowDepth: Math.ceil(size / 8),
+      outerPadding: Math.ceil(size / 8)
     }
   }
   
   export function getDefaultSize(): Size {
-    return SIZE_LARGE
+    return SIZE_MEDIUM
   }
 
   export function getAllSizes(): Size[] {
     return [
-      SIZE_XS,
+      SIZE_ATOMIC,
+      SIZE_TINY,
       SIZE_SMALL,
       SIZE_MEDIUM,
       SIZE_LARGE,
-      SIZE_XL,
+      SIZE_HUGE,
       SIZE_TITANIC,
-      SIZE_GARGANTUAN,
-      SIZE_INTERPLANETARY,
-      SIZE_INTERGALACTIC
+      SIZE_COLOSSAL,
+      SIZE_PLANETARY,
+      SIZE_GALACTIC,
+      SIZE_COSMIC
     ]
   }
 

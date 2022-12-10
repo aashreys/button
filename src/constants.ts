@@ -17,3 +17,5 @@ export const SCHEME_VIEW = 'button:goto:view -> '
 export const ERROR_EMPTY_NODES = 'Nodes array cannot be empty'
 
 export const WINDOW_TITLE = 'Edit Button'
+export const WIDTH = 240
+export const HEIGHT = 212

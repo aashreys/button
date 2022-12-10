@@ -5,16 +5,13 @@ const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, useEffe
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
 import { emit, on, showUI } from '@create-figma-plugin/utilities'
-import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, EVENT_SELECTION_SET, EVENT_VIEW_SELECTED, EVENT_ENABLE_NODE_BUTTON, WINDOW_TITLE, MSG_SELECT_LAYERS } from './constants'
+import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, EVENT_SELECTION_SET, EVENT_VIEW_SELECTED, EVENT_ENABLE_NODE_BUTTON, WINDOW_TITLE, MSG_SELECT_LAYERS, HEIGHT, WIDTH } from './constants'
 import { TargetResolver as TargetFactory } from './targets/targetFactory'
 import { Target, TargetType } from './targets/target'
 import { EmptyTarget } from "./targets/EmptyTarget"
 import { Navigator } from './targets/navigator'
 import { SETTINGS_ICON } from './icons/settings_icon'
-
-const WIDTH = 240
-const HEIGHT = 212
-const LATEST_VERSION = 2
+import { Migration } from './migration'
 
 export default function () {
   figma.skipInvisibleInstanceChildren = true
@@ -46,12 +43,18 @@ function Button() {
   function migrate(currentVersion: number) {
     switch (currentVersion) {
       case 1:
+        /* Migrate from url to targets */
         let target = targetFactory.fromUrl(deprecated_Url)
         setTarget(target)
         set_deprecatedUrl('')
-        setVersion(LATEST_VERSION)
-        console.log(`Successfully migrated to version ${LATEST_VERSION}`)
-      case LATEST_VERSION:
+      case 2:
+        /* Migrate to new size format with outerPadding property */
+        size 
+          ? setSize(Migration.getClosestSize(size.fontSize, Sizes.getAllSizes()))
+          : setSize(Sizes.getDefaultSize()) 
+        setVersion(Migration.LATEST_VERSION)
+        console.log(`Successfully migrated to version ${Migration.LATEST_VERSION}`)
+      case Migration.LATEST_VERSION:
     }
   }
 
@@ -205,6 +208,7 @@ function Button() {
         let size: Size = Sizes.getAllSizes().find(
           size => size.name === event.propertyValue
         ) as Size
+        if (!size) size = Sizes.getDefaultSize()
         setSize(size)
       }
       if (event.propertyName === 'settings') {
@@ -233,10 +237,10 @@ function Button() {
       direction="vertical"
       spacing={16}
       padding={{ 
-        top: 12,
-        bottom: 12 + size.shadowDepth,
-        left: 12,
-        right: 12
+        top: size.outerPadding,
+        bottom: size.outerPadding + size.shadowDepth,
+        left: size.outerPadding,
+        right: size.outerPadding
       }}
       horizontalAlignItems="center"
     >
