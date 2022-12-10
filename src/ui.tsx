@@ -80,7 +80,7 @@ function Plugin(props:
 
       <VerticalSpace space="large" />
 
-      <Text>Or navigate to selected layers...</Text>
+      <Text>Or navigate...</Text>
 
       <VerticalSpace space="small" />
 
@@ -90,13 +90,13 @@ function Plugin(props:
           secondary={!enableNodeButton}
           fullWidth
           onClick={() => emit(EVENT_SELECTION_SET)}>
-          {'Selection ->'}
+          {'To Selection'}
         </Button>
 
         <Button
           fullWidth
           onClick={() => emit(EVENT_VIEW_SELECTED)}>
-          {'Current View ->'}
+          {'To Current View'}
         </Button>
 
       </Columns>
