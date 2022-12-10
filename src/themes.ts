@@ -36,11 +36,11 @@ export module Themes {
 
   const GREEN = createTheme('Green', '#13ae5c', '#333333', '#ffffff')
 
-  const BLUE = createTheme('Blue', '#0b99ff', '#333333', '#ffffff')
+  const FIGMA_BLUE = createTheme('Blue', '#0b99ff', '#333333', '#ffffff')
 
-  const VIOLET = createTheme('Violet', '#9748ff', '#333333', '#ffffff')
+  const FIGJAM_PURPLE = createTheme('Violet', '#9748ff', '#333333', '#ffffff')
 
-  const PURPLE = createTheme('Purple', '#7452FF', '#333333', '#ffffff')
+  const VIOLET = createTheme('Purple', '#7452FF', '#333333', '#ffffff')
 
   const WHITE = createTheme('White', '#ffffff', '#333333', '#333333')
 
@@ -68,9 +68,9 @@ export module Themes {
       ORANGE,
       YELLOW,
       GREEN,
-      BLUE,
+      FIGMA_BLUE,
+      FIGJAM_PURPLE,
       VIOLET,
-      PURPLE,
       WHITE,
       DARK_GRAY,
       LIGHT_GRAY,
@@ -85,7 +85,7 @@ export module Themes {
 
   export function getDefaultTheme(): Theme {
     if (figma.editorType === 'figjam') {
-      return PURPLE
+      return FIGJAM_PURPLE
     } else {
       return VIOLET
     }
