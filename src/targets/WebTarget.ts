@@ -11,7 +11,7 @@ export class WebTarget implements Target {
   constructor(url: string) {
     this.type = TargetType.WEB;
     this.url = url;
-    this.message = '';
+    this.message = 'Click to open link';
     this.label = 'Open link 🔗'
   }
 

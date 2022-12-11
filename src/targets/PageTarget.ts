@@ -13,7 +13,7 @@ export class PageTarget implements Target {
   constructor(page: PageNode) {
     this.type = TargetType.PAGE;
     this.url = SCHEME_PAGE + page.id;
-    this.message = `Button will navigate to page ${page.name}`;
+    this.message = `Click to navigate to page ${page.name}`;
     this.pageId = page.id;
     this.label = 'Go to page ->'
   }
