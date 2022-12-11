@@ -225,9 +225,11 @@ function Button() {
     }
   }
 
-  function notify(message: string, isError?: boolean) {
-    if (notifyHandler) notifyHandler.cancel()
-    notifyHandler = figma.notify(message, { error: isError })
+  function notify(message: string | undefined, isError?: boolean) {
+    if (message && message.length > 0) {
+      if (notifyHandler) notifyHandler.cancel()
+      notifyHandler = figma.notify(message, { error: isError })
+    }
   }
 
   return (
