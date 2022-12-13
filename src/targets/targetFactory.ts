@@ -1,4 +1,3 @@
-import { computeMaximumBounds } from "@create-figma-plugin/utilities";
 import { ERROR_EMPTY_NODES, MSG_LAYER_NOT_FOUND, MSG_NOT_SAME_PAGE, SCHEME_NODE, SCHEME_PAGE, SCHEME_VIEW } from "../constants";
 import { Target } from "./target";
 import { NodeTarget } from "./NodeTarget";
@@ -15,7 +14,7 @@ export class TargetResolver {
 
   public fromUrl(url: string): Target {
 
-    if (this.isThisFigmaFile(url) && url.toLowerCase().includes('node-id=')) {
+    if (this.isThisFigmaFile(url) && url.toLowerCase().includes('node-id=') && !url.toLowerCase().includes('proto')) {
       // URL points to this file, could be a PageNode or SceneNode
       let nodeId = this.getNodeIdFromFigmaUrl(url)
       return this.fromNodes([nodeId as string]) 
