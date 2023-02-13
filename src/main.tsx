@@ -199,9 +199,10 @@ function Button() {
     ],
     (event) => { 
       if (event.propertyName === 'color') {
-        let theme: Theme = Themes.getAllThemes().find(
-          theme => theme.primaryColor === event.propertyValue
-        ) as Theme
+        let color = event.propertyValue?.toUpperCase()
+        let theme: Theme = Themes.getAllThemes().find(theme => {
+          return theme.primaryColor.toUpperCase() === color
+        }) as Theme
         setTheme(theme)
       }
       if (event.propertyName === 'size') {

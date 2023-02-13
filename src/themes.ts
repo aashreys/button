@@ -36,11 +36,13 @@ export module Themes {
 
   const FIGMA_BLUE = createTheme('Blue', '#0b99ff', '#333333', '#ffffff')
 
-  const FIGJAM_PURPLE = createTheme('Violet', '#9748ff', '#333333', '#ffffff')
+  const FIGJAM_PURPLE = createTheme('Purple', '#9748ff', '#333333', '#ffffff')
 
-  const VIOLET = createTheme('Purple', '#7452FF', '#333333', '#ffffff')
+  const VIOLET = createTheme('Violet', '#7452FF', '#333333', '#ffffff')
 
-  const WHITE = createTheme('White', '#ffffff', '#333333', '#333333')
+  /* Don't change primary color to #ffffff for WHITE because 
+  Figma only returns #FFF which breaks theme lookup */
+  const WHITE = createTheme('White', '#fff', '#333333', '#333333')
 
   const DARK_GRAY = createTheme('Dark Gray', '#757575', '#333333', '#ffffff')
 
