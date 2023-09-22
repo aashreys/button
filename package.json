@@ -9,7 +9,7 @@
     "@create-figma-plugin/tsconfig": "^2.1.5",
     "@figma/plugin-typings": "^1.45.0",
     "@figma/widget-typings": "^1.3.0",
-    "typescript": "^4"
+    "typescript": "^5"
   },
   "scripts": {
     "build": "build-figma-plugin --typecheck --minify",
@@ -24,6 +24,11 @@
     "id": "1178811712656619576",
     "name": "Button",
     "main": "src/main.tsx",
-    "ui": "src/ui.tsx"
+    "ui": "src/ui.tsx",
+    "networkAccess": {
+      "allowedDomains": ["none"],
+      "reasoning": "Button does not make any network requests. It forwards any requests to open webpages to your system browser.",
+      "devAllowedDomains": []
+    }
   }
 }
