@@ -44,7 +44,7 @@ function Button() {
     switch (currentVersion) {
       case 1:
         /* Migrate from url to targets */
-        let target = targetFactory.fromUrl(deprecated_Url)
+        let target = targetFactory.fromDeprecatedUrl(deprecated_Url)
         setTarget(target)
         set_deprecatedUrl('')
       case 2:
@@ -235,17 +235,13 @@ function Button() {
 
   return (
     <AutoLayout
-      name="Fill Container"
-      overflow="visible"
-      direction="vertical"
-      spacing={16}
+      name="Button Container"
       padding={{ 
         top: size.outerPadding,
         bottom: size.outerPadding + size.shadowDepth,
         left: size.outerPadding,
         right: size.outerPadding
       }}
-      horizontalAlignItems="center"
     >
       <AutoLayout
         name="Label Container"
@@ -257,30 +253,22 @@ function Button() {
           showShadowBehindNode: false,
         }}
         fill="#ffffff"
-        hoverStyle={target.type !== TargetType.EMPTY ? {
-          fill: theme.primaryColor
-        } : {}}
         stroke={target.type !== TargetType.EMPTY ? theme.primaryColor : "#d9d9d9"}
         cornerRadius={size.cornerRadius}
         strokeWidth={size.strokeWidth}
-        overflow="visible"
         padding={{
           vertical: size.verticalPadding,
           horizontal: size.horizontalPadding,
         }}
-        horizontalAlignItems="center"
-        verticalAlignItems="center"
         onClick={handleClick}
       >
         <Text
           name="Label"
           fill={theme.textColor}
-          hoverStyle={target.type !== TargetType.EMPTY ? {
-            fill: theme.hoverTextColor
-          } : {}}
           fontFamily="Inter"
           fontSize={size.fontSize}
           fontWeight={600}
+          href={target.type === TargetType.WEB ? target.url : ''}
         >
           { getButtonLabel() }
         </Text>

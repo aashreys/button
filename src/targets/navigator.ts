@@ -1,4 +1,4 @@
-import { MSG_LAYER_NOT_FOUND, MSG_NOT_SAME_PAGE } from "../constants";
+import { MSG_LAYER_NOT_FOUND, MSG_NOT_SAME_PAGE, NAV_DURATION } from "../constants";
 import { getPage, isOnSamePage, smoothScrollToNodes, smoothScrollToPoint } from "../utils";
 import { Target, TargetType } from "./target";
 import { NodeTarget } from "./NodeTarget";
@@ -41,7 +41,7 @@ export class Navigator {
           smoothScrollToNodes(
             nodes as SceneNode[],
             this.getZoomScale(),
-            300
+            NAV_DURATION
           ).then(() => { resolve() })
         } else {
           reject(MSG_NOT_SAME_PAGE)
@@ -71,7 +71,7 @@ export class Navigator {
       let page = figma.getNodeById(target.pageId)
       if (page && page.type === 'PAGE') {
         figma.currentPage = page
-        smoothScrollToPoint(target.x, target.y, target.zoom, 300).then(() => {
+        smoothScrollToPoint(target.x, target.y, target.zoom, NAV_DURATION).then(() => {
           resolve()
         })
       }
@@ -82,10 +82,7 @@ export class Navigator {
   }
 
   private getZoomScale() {
-    if (figma.editorType === 'figjam') {
-      return 1.4
-    }
-    return 1.2
+    return figma.editorType === 'figjam' ? 1.4 : 1.2
   }
 
 }

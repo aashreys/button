@@ -63,13 +63,13 @@ function Plugin(props:
 
       <VerticalSpace space="large" />
 
-      <Text>Open a URL...</Text>
+      <Text style={'font-weight: bold;'}>Open a URL...</Text>
 
       <VerticalSpace space="small" />
 
       <Textbox
         {...useInitialFocus()}
-        placeholder='Paste layer, page or web URL'
+        placeholder='Type a layer, page or web URL'
         value={url}
         onValueInput={setUrl}
         validateOnBlur={(url) => {
@@ -78,9 +78,13 @@ function Plugin(props:
         }}
         variant="border" />
 
+      <VerticalSpace space="small" />
+
+      <Text style={'color: var(--figma-color-text-secondary)'}>Anyone, including viewers, can open links. Best for documentation.</Text>
+
       <VerticalSpace space="large" />
 
-      <Text>Or navigate...</Text>
+      <Text style={'font-weight: bold;'}>Or navigate this file...</Text>
 
       <VerticalSpace space="small" />
 
@@ -100,6 +104,10 @@ function Plugin(props:
         </Button>
 
       </Columns>
+
+      <VerticalSpace space="small" />
+
+      <Text style={'color: var(--figma-color-text-secondary)'}>Only editors can navigate layers. Best for presentations.</Text>
 
       <VerticalSpace space="extraLarge" />
 

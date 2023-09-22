@@ -15,7 +15,7 @@ export class ViewTarget implements Target {
 
   constructor(page: PageNode, x: number, y: number, zoom: number) {
     this.type = TargetType.VIEW;
-    this.url = SCHEME_VIEW + `${page.id},${x},${y},${zoom}`;
+    this.url = ''
     this.message = `Click to navigate to current view`;
     this.pageId = page.id;
     this.x = x;

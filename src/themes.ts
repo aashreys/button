@@ -84,11 +84,12 @@ export module Themes {
   }
 
   export function getDefaultTheme(): Theme {
-    if (figma.editorType === 'figjam') {
-      return FIGJAM_PURPLE
-    } else {
-      return VIOLET
-    }
+    return FIGJAM_PURPLE
+    // if (figma.editorType === 'figjam') {
+    //   return FIGJAM_PURPLE
+    // } else {
+    //   return VIOLET
+    // }
   }
 
 }

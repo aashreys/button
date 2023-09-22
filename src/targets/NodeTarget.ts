@@ -17,7 +17,7 @@ export class NodeTarget implements Target {
       ? `Click to navigate to selected layers`
       : `Click to navigate to ${nodes[0].name}`
       this.nodeIds = nodes.map((node) => { return node.id })
-      this.url = SCHEME_NODE + this.nodeIds.join(',')
+      this.url = ''
       this.label = nodes.length > 1 
       ? `Go to layers ->`
       : `Go to layer ->`
