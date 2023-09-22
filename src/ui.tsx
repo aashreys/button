@@ -63,19 +63,19 @@ function Plugin(props:
 
       <VerticalSpace space="extraLarge" />
 
-      <Text style={'font-weight: bold;'}>Open a URL...</Text>
+      <Text style={'font-weight: bold;'}>Open a webpage</Text>
 
       <VerticalSpace space="small" />
 
       <Text style={'color: var(--figma-color-text-secondary)'}>
-        Anyone, including viewers, can click this button to open URLs.
+        Anyone, including viewers, can click Button to open a webpage
       </Text>
 
       <VerticalSpace space="small" />
 
       <Textbox
         {...useInitialFocus()}
-        placeholder='Type a URL'
+        placeholder='Type or paste a link'
         value={url}
         onValueInput={setUrl}
         validateOnBlur={(url) => {
@@ -86,12 +86,12 @@ function Plugin(props:
 
       <VerticalSpace space="extraLarge" />
 
-      <Text style={'font-weight: bold;'}>Or navigate this file...</Text>
+      <Text style={'font-weight: bold;'}>Or navigate this file</Text>
 
       <VerticalSpace space="small" />
 
       <Text style={'color: var(--figma-color-text-secondary)'}>
-        Only editors can click this button to navigate this file.
+        Only editors can click Button to navigate this file
       </Text>
 
       <VerticalSpace space="small" />
