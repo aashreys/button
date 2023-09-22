@@ -44,9 +44,11 @@ function Button() {
     switch (currentVersion) {
       case 1:
         /* Migrate from url to targets */
-        let target = targetFactory.fromDeprecatedUrl(deprecated_Url)
-        setTarget(target)
-        set_deprecatedUrl('')
+        if (deprecated_Url.length > 0) {
+          let target = targetFactory.fromDeprecatedUrl(deprecated_Url)
+          setTarget(target)
+          set_deprecatedUrl('')
+        }
       case 2:
         /* Migrate to new size format with outerPadding property */
         size 
