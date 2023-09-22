@@ -53,7 +53,7 @@ function Plugin(props:
       <VerticalSpace space="large" />
 
       <Textbox
-        placeholder='Type label'
+        placeholder='Type a label'
         value={label}
         onValueInput={(label) => {
           setLabel(label)
@@ -61,15 +61,21 @@ function Plugin(props:
         }}
         variant="border" />
 
-      <VerticalSpace space="large" />
+      <VerticalSpace space="extraLarge" />
 
       <Text style={'font-weight: bold;'}>Open a URL...</Text>
 
       <VerticalSpace space="small" />
 
+      <Text style={'color: var(--figma-color-text-secondary)'}>
+        Anyone, including viewers, can click this button to open URLs.
+      </Text>
+
+      <VerticalSpace space="small" />
+
       <Textbox
         {...useInitialFocus()}
-        placeholder='Type a layer, page or web URL'
+        placeholder='Type a URL'
         value={url}
         onValueInput={setUrl}
         validateOnBlur={(url) => {
@@ -78,13 +84,15 @@ function Plugin(props:
         }}
         variant="border" />
 
-      <VerticalSpace space="small" />
-
-      <Text style={'color: var(--figma-color-text-secondary)'}>Anyone, including viewers, can open links. Best for documentation.</Text>
-
-      <VerticalSpace space="large" />
+      <VerticalSpace space="extraLarge" />
 
       <Text style={'font-weight: bold;'}>Or navigate this file...</Text>
+
+      <VerticalSpace space="small" />
+
+      <Text style={'color: var(--figma-color-text-secondary)'}>
+        Only editors can click this button to navigate this file.
+      </Text>
 
       <VerticalSpace space="small" />
 
@@ -105,11 +113,7 @@ function Plugin(props:
 
       </Columns>
 
-      <VerticalSpace space="small" />
-
-      <Text style={'color: var(--figma-color-text-secondary)'}>Only editors can navigate layers. Best for presentations.</Text>
-
-      <VerticalSpace space="extraLarge" />
+      <VerticalSpace space="large" />
 
     </Container>
   )
