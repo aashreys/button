@@ -27,8 +27,7 @@
     "ui": "src/ui.tsx",
     "networkAccess": {
       "allowedDomains": ["none"],
-      "reasoning": "Button does not make any network requests. It forwards any requests to open webpages to your system browser.",
-      "devAllowedDomains": []
+      "reasoning": "Button does not make any network requests. It forwards any requests to open webpages to your system browser."
     }
   }
 }
