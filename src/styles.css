@@ -1,0 +1,71 @@
+unicode-emoji-picker {
+  /* Because the component is built using the "em" unit, everything is scaled up from the font-size */
+  /* So you should probably only change this value if you want to resize the component */
+  /* It also directly reflects the font-size for the emoji font */
+  font-size: 18px;
+
+  /* Dimensions of the viewport (doesn't include the filters bar) */
+  --min-width: 1em;
+  /* 6 emojis wide */
+  --min-height: 1em;
+  /* 4 emojis tall */
+  --max-width: 13em;
+  /* 11 emojis wide */
+  --max-height: 9.6em;
+  /* 10 emojis tall */
+
+  /* Global */
+  --fill-color: #fff;
+  --text-color: #111;
+  --border-radius: 10px;
+  --box-shadow: 0 8px 30px 0 rgba(0, 0, 0, 0.2), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+  --transition: 150ms cubic-bezier(0, 0, .2, .1);
+  --emoji-font-family: apple color emoji, segoe ui emoji, noto color emoji, android emoji, emojisymbols, emojione mozilla, twemoji mozilla, segoe ui symbol;
+
+  /* Filters bar */
+  --filters-border-width: 1px;
+  --filters-border-color: #e4e4e4;
+  --filter-fill-color: transparent;
+  --filter-fill-color-hover: #e9e9e9;
+  --filter-border-radius: 8px;
+  --filter-active-marker-border-width: 2px;
+  --filter-active-marker-border-color: #aaa;
+
+  /* Content's viewport */
+  --content-scrollbar-thumb-fill-color: #d7d7d7;
+  --content-scrollbar-thumb-fill-color-hover: #aaa;
+
+  /* Title/search bar */
+  --title-bar-fill-color: rgba(255, 255, 255, 0.95);
+  --search-input-padding: 0;
+  --search-input-border-width: 0 0 0 0;
+  --search-input-border-color: #e4e4e4;
+  --search-input-border-color-hover: #222;
+
+  /* Emojis */
+  --emoji-fill-color: transparent;
+  --emoji-fill-color-hover: transparent;
+  --emoji-border-width: 2px;
+  --emoji-border-color: transparent;
+  --emoji-border-color-hover: #d7d7d7;
+  --emoji-border-radius: 8px;
+
+  /* Variations panel */
+  --variations-backdrop-fill-color: rgba(255, 255, 255, 0.7);
+  --variations-fill-color: var(--fill-color);
+  --variations-border-radius: var(--border-radius);
+  --variations-shadow: 0 2px 5px 0 rgba(0, 0, 0, .2), 0 1px 3px 0 rgba(0, 0, 0, .2);
+  --emoji-variation-marker-size: 8px;
+  --emoji-variation-marker-border-width: 2px;
+  --emoji-variation-marker-border-color: #d7d7d7;
+  --emoji-variation-marker-border-color-hover: #aaa;
+
+}
+
+.emojiContainer {
+  padding: 8px;
+  overflow: hidden;
+  position: absolute;
+  top: 16%;
+  z-index: 10;
+}

@@ -2,7 +2,9 @@
   "dependencies": {
     "@create-figma-plugin/ui": "^2.1.5",
     "@create-figma-plugin/utilities": "^2.1.5",
-    "preact": "^10"
+    "node-emoji": "^2.1.0",
+    "preact": "^10",
+    "unicode-emoji-picker": "^1.3.0"
   },
   "devDependencies": {
     "@create-figma-plugin/build": "^2.1.5",
@@ -26,7 +28,9 @@
     "main": "src/main.tsx",
     "ui": "src/ui.tsx",
     "networkAccess": {
-      "allowedDomains": ["none"],
+      "allowedDomains": [
+        "none"
+      ],
       "reasoning": "Button does not make any network requests. It forwards any requests to open webpages to your system browser."
     }
   }
