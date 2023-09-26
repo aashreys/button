@@ -2,7 +2,6 @@
   "dependencies": {
     "@create-figma-plugin/ui": "^2.1.5",
     "@create-figma-plugin/utilities": "^2.1.5",
-    "node-emoji": "^2.1.0",
     "preact": "^10",
     "unicode-emoji-picker": "^1.3.0"
   },
