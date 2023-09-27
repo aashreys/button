@@ -9,9 +9,9 @@ unicode-emoji-picker {
   /* 6 emojis wide */
   --min-height: 1em;
   /* 4 emojis tall */
-  --max-width: 13em;
+  --max-width: 12.6em;
   /* 11 emojis wide */
-  --max-height: 9.6em;
+  --max-height: 9.2em;
   /* 10 emojis tall */
 
   /* Global */
@@ -63,9 +63,7 @@ unicode-emoji-picker {
 }
 
 .emojiContainer {
-  padding: 8px;
-  overflow: hidden;
   position: absolute;
-  top: 16%;
+  margin-top: 8px;
   z-index: 10;
 }

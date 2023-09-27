@@ -14,9 +14,10 @@ import { emit, on } from '@create-figma-plugin/utilities'
 import { h } from 'preact'
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks'
 import { EVENT_ENABLE_NODE_BUTTON, EVENT_LABEL_UPDATED, EVENT_SELECTION_SET, EVENT_URL_UPDATED, EVENT_VIEW_SELECTED } from './constants'
-import 'unicode-emoji-picker';
-import styles from './styles.css'
+import 'unicode-emoji-picker'
 import { EmojiPickEvent, EmojiPickerElement } from 'unicode-emoji-picker'
+import styles from './styles.css'
+import './styles.css'
 
 function Plugin(props: 
   { label: string, 
@@ -28,7 +29,7 @@ function Plugin(props:
   const [label, setLabel] = useState(props.label)
   const [url, setUrl] = useState(props.url)
   const [enableNodeButton, setEnableNodeButton] = useState(false)
-  const [emojiPickerVisible, setEmojiPickerVisibility] = useState(false)
+  const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false)
 
   const emojiPicker = useRef<EmojiPickerElement>(null)
 
@@ -39,22 +40,22 @@ function Plugin(props:
     let newLabel = label + event.detail.emoji
     setLabel(newLabel)
     emit(EVENT_LABEL_UPDATED, { label: newLabel })
-    hideEmojiPicker()
   }, [label])
 
-  function onEmojiButtonClick() {
-    !emojiPickerVisible ? showEmojiPicker() : hideEmojiPicker()
+
+  const escListener = (e: KeyboardEvent) => {
+    if (e.key === "Escape") {
+      setEmojiPickerVisible(false)
+    }
   }
 
-  function showEmojiPicker() {
-    setEmojiPickerVisibility(true)
-    if (emojiPicker.current) emojiPicker.current.addEventListener('emoji-pick', emojiListener)
-  }
-
-  function hideEmojiPicker() {
-    setEmojiPickerVisibility(false)
-    if (emojiPicker.current) emojiPicker.current.removeEventListener('emoji-pick', emojiListener)
-  }
+  const clickOutsideListner = useCallback((e: MouseEvent) => {
+    if (emojiPicker.current && !emojiPicker.current.contains(e.target)) {
+      if (isEmojiPickerVisible) {
+        setEmojiPickerVisible(false)
+      }
+    }
+  }, [isEmojiPickerVisible])
 
   useEffect(() => {
     listeners.push(on(EVENT_URL_UPDATED, (data) => { setUrl(data.url) }))
@@ -68,6 +69,15 @@ function Plugin(props:
   }, [])
 
   useEffect(() => {
+    document.onkeydown = escListener
+    document.addEventListener('click', clickOutsideListner)
+    return () => { 
+      document.onkeydown = null
+      document.removeEventListener('click', clickOutsideListner)
+    }
+  }, [escListener, clickOutsideListner])
+
+  useEffect(() => {
     if (emojiPicker.current) emojiPicker.current.addEventListener('emoji-pick', emojiListener)
     return () => {
       if (emojiPicker.current) emojiPicker.current.removeEventListener('emoji-pick', emojiListener)
@@ -75,98 +85,100 @@ function Plugin(props:
   }, [emojiListener])
 
   return (
-    <div>
-      <div 
-      class={styles.emojiContainer} 
-        style={emojiPickerVisible ? 'display: block' : 'display:none'}>
-        <unicode-emoji-picker
-        ref={emojiPicker}
-        filters-position="top" 
-        default-group="search" />
-      </div>
-      <Container space="small">
+    <Container space="small">
 
-        <VerticalSpace space="large" />
+      <VerticalSpace space="large" />
 
-        <div style={'display: flex; width: 100%;'}>
+      <div style={'display: flex; width: 100%;'}>
 
-          <div style={'flex: 1; margin-right: 4px'}>
-            <Textbox
-              placeholder='Type a label'
-              value={label}
-              onValueInput={(input) => {
-                setLabel(input)
-                emit(EVENT_LABEL_UPDATED, { label: input })
-              }}
-              variant="border" />
-          </div>
+        <div style={'flex: 1; margin-right: 4px'}>
+          <Textbox
+            placeholder='Type a label'
+            value={label}
+            onValueInput={(input) => {
+              setLabel(input)
+              emit(EVENT_LABEL_UPDATED, { label: input })
+            }}
+            variant="border" />
+        </div>
 
-          <div>
+        <div>
 
-            <IconButton onClick={onEmojiButtonClick}>
-              <IconSmiley32 />
-            </IconButton>
-
-          </div>
+          <IconButton onClick={() => {
+            setEmojiPickerVisible(!isEmojiPickerVisible)
+          }}>
+            <IconSmiley32 />
+          </IconButton>
 
         </div>
 
-        <VerticalSpace space="extraLarge" />
+      </div>
 
-        <Text style={'font-weight: bold;'}>Open a webpage</Text>
+      <div
+        class={styles.emojiContainer}
+        style={isEmojiPickerVisible ? 'display: block' : 'display: none'}>
+        <unicode-emoji-picker
+          version="14"
+          ref={emojiPicker}
+          filters-position="top"
+          default-group="search" />
+      </div>
 
-        <VerticalSpace space="small" />
+      <VerticalSpace space="extraLarge" />
 
-        <Text style={'color: var(--figma-color-text-secondary)'}>
-          Viewers and editors can click this button to open a webpage.
-        </Text>
+      <Text style={'font-weight: bold;'}>Open a webpage</Text>
 
-        <VerticalSpace space="small" />
+      <VerticalSpace space="small" />
 
-        <Textbox
-          {...useInitialFocus()}
-          placeholder='Type or paste a link'
-          value={url}
-          onValueInput={setUrl}
-          validateOnBlur={(url) => {
-            emit(EVENT_URL_UPDATED, { url })
-            return url
-          }}
-          variant="border" />
+      <Text style={'color: var(--figma-color-text-secondary)'}>
+        Viewers and editors can click this button to open a webpage.
+      </Text>
 
-        <VerticalSpace space="extraLarge" />
+      <VerticalSpace space="small" />
 
-        <Text style={'font-weight: bold;'}>Or navigate this file</Text>
+      <Textbox
+        {...useInitialFocus()}
+        placeholder='Type or paste a link'
+        value={url}
+        onValueInput={setUrl}
+        validateOnBlur={(url) => {
+          emit(EVENT_URL_UPDATED, { url })
+          return url
+        }}
+        variant="border" />
 
-        <VerticalSpace space="small" />
+      <VerticalSpace space="extraLarge" />
 
-        <Text style={'color: var(--figma-color-text-secondary)'}>
-          Only editors can click this button to navigate this file.
-        </Text>
+      <Text style={'font-weight: bold;'}>Or navigate this file</Text>
 
-        <VerticalSpace space="small" />
+      <VerticalSpace space="small" />
 
-        <Columns space="extraSmall">
+      <Text style={'color: var(--figma-color-text-secondary)'}>
+        Only editors can click this button to navigate this file.
+      </Text>
 
-          <Button
-            secondary={!enableNodeButton}
-            fullWidth
-            onClick={() => emit(EVENT_SELECTION_SET)}>
-            {'To Selection'}
-          </Button>
+      <VerticalSpace space="small" />
 
-          <Button
-            fullWidth
-            onClick={() => emit(EVENT_VIEW_SELECTED)}>
-            {'To Current View'}
-          </Button>
+      <Columns space="extraSmall">
 
-        </Columns>
+        <Button
+          secondary={!enableNodeButton}
+          fullWidth
+          onClick={() => emit(EVENT_SELECTION_SET)}>
+          {'To Selection'}
+        </Button>
 
-        <VerticalSpace space="large" />
+        <Button
+          fullWidth
+          onClick={() => emit(EVENT_VIEW_SELECTED)}>
+          {'To Current View'}
+        </Button>
 
-      </Container>
-    </div>
+      </Columns>
+
+      <VerticalSpace space="large" />
+
+    </Container>
    
   )
 }
