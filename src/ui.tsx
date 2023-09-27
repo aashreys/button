@@ -50,6 +50,7 @@ function Plugin(props:
   }
 
   const clickOutsideListner = useCallback((e: MouseEvent) => {
+    // @ts-ignore
     if (emojiPicker.current && !emojiPicker.current.contains(e.target)) {
       if (isEmojiPickerVisible) {
         setEmojiPickerVisible(false)
@@ -117,6 +118,8 @@ function Plugin(props:
       <div
         class={styles.emojiContainer}
         style={isEmojiPickerVisible ? 'display: block' : 'display: none'}>
+        {/* 
+          // @ts-ignore */}
         <unicode-emoji-picker
           version="14"
           ref={emojiPicker}
