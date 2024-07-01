@@ -1,7 +1,7 @@
 /** @jsx figma.widget.h */
 
 const { widget } = figma
-const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, useEffect, useWidgetNodeId } = widget
+const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, useEffect, useWidgetNodeId, waitForTask } = widget
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
 import { emit, on, showUI } from '@create-figma-plugin/utilities'
@@ -37,9 +37,6 @@ function Button() {
   const widgetId = useWidgetNodeId()
 
   let notifyHandler: NotificationHandler | null = null
-
-  /* Migrate state to latest version, whenever user updates widget */
-  migrate(version)
 
   useStickable()
 
@@ -97,6 +94,8 @@ function Button() {
   )
 
   useEffect(() => {
+    /* Migrate state to latest version, whenever user updates widget */
+    waitForTask(migrate(version))
     addListeners()
     return () => removeListeners()
   })
@@ -126,10 +125,13 @@ function Button() {
         })
         if (selection.length > 0) {
           let nodeIds = selection.map((node) => { return node.id })
-          let target = targetFactory.fromNodes(nodeIds)
-          setTarget(target)
-          emit(EVENT_URL_UPDATED, { url: target.url })
-          notify(target.message)
+          targetFactory.fromNodes(nodeIds).then(
+            (target) => {
+              setTarget(target)
+              emit(EVENT_URL_UPDATED, { url: target.url })
+              notify(target.message)
+            }
+          )
         }
         else {
           notify(MSG_SELECT_LAYERS)
@@ -177,9 +179,9 @@ function Button() {
           figma.closePlugin()
           resolve()
         })
-        .catch((message: any) => {
+        .catch((error?: any) => {
           showSettingsUi()
-          notify(message, true)
+          if (error) notify(error, true)
         })
     })
   }
@@ -199,12 +201,12 @@ function Button() {
     }
   }
 
-  function migrate(currentVersion: number) {
+  async function migrate(currentVersion: number) {
     switch (currentVersion) {
       case 1:
         /* Migrate from url to targets */
         if (deprecated_Url.length > 0) {
-          let target = targetFactory.fromDeprecatedUrl(deprecated_Url)
+          let target = await targetFactory.fromDeprecatedUrl(deprecated_Url)
           setTarget(target)
           set_deprecatedUrl('')
         }
@@ -220,6 +222,7 @@ function Button() {
   }
 
   function showSettingsUi(): Promise<void> {
+    /* Don't resolve this promise so Setting UI stays open */
     return new Promise<void>(() => {
       showUI(
         {

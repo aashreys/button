@@ -24,24 +24,25 @@ export class TargetResolver {
 
   }
 
-  public fromDeprecatedUrl(url: string): Target {
+  public async fromDeprecatedUrl(url: string): Promise<Target> {
     try {
       let nodeId = url.replace(this.DEPRECATED_SCHEME_NODE, '')
-      return this.fromNodes([nodeId])
+      return await this.fromNodes([nodeId])
     } catch (e) {
       console.error(e)
       return new EmptyTarget()
     }    
   }
 
-  public fromNodes(nodeIds: string[]): Target {
-    if (nodeIds.length === 1) return this.fromSingleNode(nodeIds[0])
-    if (nodeIds.length > 1) return this.fromMultipleNodes(nodeIds)
+  public async fromNodes(nodeIds: string[]): Promise<Target> {
+    if (nodeIds.length === 1) return await this.fromSingleNode(nodeIds[0])
+    if (nodeIds.length > 1) return await this.fromMultipleNodes(nodeIds)
     throw new Error(ERROR_EMPTY_NODES)
   }
 
-  private fromSingleNode(nodeId: string): Target {
-    let node = figma.getNodeById(nodeId)
+  private async fromSingleNode(nodeId: string): Promise<Target> {
+    console.log('fromSingleNode')
+    let node = await figma.getNodeByIdAsync(nodeId)
     if (node && node.type === 'PAGE') {
       return new PageTarget(node as PageNode)
     }
@@ -53,11 +54,13 @@ export class TargetResolver {
     }
   }
 
-  private fromMultipleNodes(nodeIds: string[]): Target {
-    let nodes = nodeIds.map((id) => {
-      return figma.getNodeById(id)
-    }).filter((node) => { return node !== null }) as SceneNode[]
-
+  private async fromMultipleNodes(nodeIds: string[]): Promise<Target> {
+    console.log('fromMultipleNodes')
+    let nodes: SceneNode[] = []
+    for (let nodeId of nodeIds) {
+      let node = await figma.getNodeByIdAsync(nodeId) as SceneNode
+      if (node) nodes.push(node)
+    }
     if (nodes.length > 0 ) {
       let isSamePage = isOnSamePage(nodes)
       if (isSamePage) {

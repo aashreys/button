@@ -15,7 +15,7 @@ export class Navigator {
       case TargetType.NODE: return this.navigateToNodeTarget(target as NodeTarget)
       case TargetType.PAGE: return this.navigateToPageTarget(target as PageTarget)
       case TargetType.VIEW: return this.navigateToViewTarget(target as ViewTarget)
-      case TargetType.EMPTY: return new Promise<void>((resolve, reject) => {reject()})
+      case TargetType.EMPTY: throw('')
     }
   }
 
@@ -25,64 +25,58 @@ export class Navigator {
         `<script>window.open('${target.url}', '_blank')</script>`,
         { visible: false }
       )
-      setTimeout(resolve, 1000)
+      setTimeout(resolve, 500)
     })
   }
 
-  private navigateToNodeTarget(target: NodeTarget): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      let nodes = target.nodeIds.map((id) => {
-        return figma.getNodeById(id)
-      }).filter((node) => { return node !== null }) as SceneNode[]
-      if (nodes.length > 0) {
-        let isSamePage = isOnSamePage(nodes)
-        if (isSamePage) {
-          figma.currentPage = getPage(nodes[0] as SceneNode)
-          smoothScrollToNodes(
-            nodes as SceneNode[],
-            this.getZoomScale(),
-            NAV_DURATION
-          ).then(() => { resolve() })
-        } else {
-          reject(MSG_NOT_SAME_PAGE)
-        }
+  private async navigateToNodeTarget(target: NodeTarget) {
+    let nodes: SceneNode[] = []
+    for (let nodeId of target.nodeIds) {
+      let node = await figma.getNodeByIdAsync(nodeId) as SceneNode
+      if (node) nodes.push(node)
+    }
+    if (nodes.length > 0) {
+      let isSamePage = isOnSamePage(nodes)
+      console.log('isSamePage: ' + isSamePage)
+      if (isSamePage) {
+        await figma.setCurrentPageAsync(getPage(nodes[0] as SceneNode))
+        await smoothScrollToNodes(
+          nodes as SceneNode[],
+          this.getZoomScale(),
+          NAV_DURATION
+        )
+      } else {
+        throw (MSG_NOT_SAME_PAGE)
       }
-      else {
-        reject(MSG_LAYER_NOT_FOUND)
-      }
-    })
+    }
+    else {
+      throw (MSG_LAYER_NOT_FOUND)
+    }
   }
 
-  private navigateToPageTarget(target: PageTarget): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      let page = figma.getNodeById(target.pageId)
-      if (page && page.type === 'PAGE') {
-        figma.currentPage = page
-        resolve()
-      }
-      else {
-        reject(MSG_LAYER_NOT_FOUND)
-      }
-    })
+  private async navigateToPageTarget(target: PageTarget) {
+    let page = await figma.getNodeByIdAsync(target.pageId)
+    if (page && page.type === 'PAGE') {
+      await figma.setCurrentPageAsync(page)
+    }
+    else {
+      throw(MSG_LAYER_NOT_FOUND)
+    }
   }
 
-  private navigateToViewTarget(target: ViewTarget): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      let page = figma.getNodeById(target.pageId)
-      if (page && page.type === 'PAGE') {
-        figma.currentPage = page
-        smoothScrollToPoint(target.x, target.y, target.zoom, NAV_DURATION).then(() => {
-          resolve()
-        })
-      }
-      else {
-        reject(MSG_LAYER_NOT_FOUND)
-      }
-    })
+  private async navigateToViewTarget(target: ViewTarget) {
+    let page = await figma.getNodeByIdAsync(target.pageId)
+    if (page && page.type === 'PAGE') {
+      await figma.setCurrentPageAsync(page)
+      await smoothScrollToPoint(target.x, target.y, target.zoom, NAV_DURATION)
+    }
+    else {
+      throw(MSG_LAYER_NOT_FOUND)
+    }
   }
 
   private getZoomScale() {
-    return figma.editorType === 'figjam' ? 1.4 : 1.2
+    return figma.editorType === 'figjam' ? 1.4 : 1.7
   }
 
 }
