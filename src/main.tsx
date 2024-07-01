@@ -1,7 +1,7 @@
 /** @jsx figma.widget.h */
 
 const { widget } = figma
-const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, useEffect, useWidgetId } = widget
+const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, useEffect, useWidgetNodeId } = widget
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
 import { emit, on, showUI } from '@create-figma-plugin/utilities'
@@ -34,50 +34,69 @@ function Button() {
   const targetFactory = new TargetFactory()
   const navigator = new Navigator()
   const listeners: (() => void)[] = []
-  const widgetId = useWidgetId()
+  const widgetId = useWidgetNodeId()
 
   let notifyHandler: NotificationHandler | null = null
 
-  /* Migrate state to latest version, whenever 
-  Figma supports updating inserted widgets */
-  function migrate(currentVersion: number) {
-    switch (currentVersion) {
-      case 1:
-        /* Migrate from url to targets */
-        if (deprecated_Url.length > 0) {
-          let target = targetFactory.fromDeprecatedUrl(deprecated_Url)
-          setTarget(target)
-          set_deprecatedUrl('')
-        }
-      case 2:
-        /* Migrate to new size format with outerPadding property */
-        size 
-          ? setSize(Migration.getClosestSize(size.fontSize, Sizes.getAllSizes()))
-          : setSize(Sizes.getDefaultSize()) 
-        setVersion(Migration.LATEST_VERSION)
-        console.log(`Successfully migrated to version ${Migration.LATEST_VERSION}`)
-      case Migration.LATEST_VERSION:
-    }
-  }
+  /* Migrate state to latest version, whenever user updates widget */
+  migrate(version)
 
-  function showSettingsUi(): Promise<void> {
-    return new Promise<void>(() => {  
-      showUI(
-        { 
-          title: WINDOW_TITLE, 
-          height: HEIGHT, 
-          width: WIDTH
-        },
-        {
-          label: label,
-          url: target.url
-        }
-      )
-    })
-  }
+  useStickable()
+
+  usePropertyMenu(
+    [
+      {
+        itemType: 'color-selector',
+        tooltip: 'Select Color',
+        propertyName: 'color',
+        options: Themes.getAllThemes().map(theme => { return {
+          tooltip: theme.name,
+          option: theme.primaryColor
+        }}),
+        selectedOption: theme.primaryColor
+      },
+      {
+        itemType: 'dropdown',
+        tooltip: 'Select Size',
+        propertyName: 'size',
+        options: Sizes.getAllSizes().map(size => { return {
+          option: size.name,
+          label: size.name
+        }}),
+        selectedOption: size.name
+      },
+      {
+        itemType: 'separator'
+      },
+      {
+        itemType: 'action',
+        tooltip: 'Open Settings',
+        propertyName: 'settings',
+        icon: SETTINGS_ICON
+      },
+    ],
+    (event) => { 
+      if (event.propertyName === 'color') {
+        let color = event.propertyValue?.toUpperCase()
+        let theme: Theme = Themes.getAllThemes().find(theme => {
+          return theme.primaryColor.toUpperCase() === color
+        }) as Theme
+        setTheme(theme)
+      }
+      if (event.propertyName === 'size') {
+        let size: Size = Sizes.getAllSizes().find(
+          size => size.name === event.propertyValue
+        ) as Size
+        if (!size) size = Sizes.getDefaultSize()
+        setSize(size)
+      }
+      if (event.propertyName === 'settings') {
+        return showSettingsUi()
+      }
+    },
+  )
 
   useEffect(() => {
-    migrate(version)
     addListeners()
     return () => removeListeners()
   })
@@ -148,77 +167,22 @@ function Button() {
       let removeCallback = listeners.pop()
       if (removeCallback) removeCallback()
     }
-    figma.off('selectionchange', () => {})
+    figma.off('selectionchange', () => { })
   }
 
   function handleClick(): Promise<void> {
     return new Promise<void>((resolve) => {
       navigator.navigateTo(target)
-      .then(() => {
-        figma.closePlugin()
-        resolve()
-      })
-      .catch((message: any) => {
-        showSettingsUi()
-        notify(message, true)
-      })
+        .then(() => {
+          figma.closePlugin()
+          resolve()
+        })
+        .catch((message: any) => {
+          showSettingsUi()
+          notify(message, true)
+        })
     })
   }
-
-  useStickable()
-
-  usePropertyMenu(
-    [
-      {
-        itemType: 'color-selector',
-        tooltip: 'Select Color',
-        propertyName: 'color',
-        options: Themes.getAllThemes().map(theme => { return {
-          tooltip: theme.name,
-          option: theme.primaryColor
-        }}),
-        selectedOption: theme.primaryColor
-      },
-      {
-        itemType: 'dropdown',
-        tooltip: 'Select Size',
-        propertyName: 'size',
-        options: Sizes.getAllSizes().map(size => { return {
-          option: size.name,
-          label: size.name
-        }}),
-        selectedOption: size.name
-      },
-      {
-        itemType: 'separator'
-      },
-      {
-        itemType: 'action',
-        tooltip: 'Open Settings',
-        propertyName: 'settings',
-        icon: SETTINGS_ICON
-      },
-    ],
-    (event) => { 
-      if (event.propertyName === 'color') {
-        let color = event.propertyValue?.toUpperCase()
-        let theme: Theme = Themes.getAllThemes().find(theme => {
-          return theme.primaryColor.toUpperCase() === color
-        }) as Theme
-        setTheme(theme)
-      }
-      if (event.propertyName === 'size') {
-        let size: Size = Sizes.getAllSizes().find(
-          size => size.name === event.propertyValue
-        ) as Size
-        if (!size) size = Sizes.getDefaultSize()
-        setSize(size)
-      }
-      if (event.propertyName === 'settings') {
-        return showSettingsUi()
-      }
-    },
-  )
 
   function getButtonLabel(): string {
     if (target.type === TargetType.EMPTY) {
@@ -233,6 +197,42 @@ function Button() {
       if (notifyHandler) notifyHandler.cancel()
       notifyHandler = figma.notify(message, { error: isError })
     }
+  }
+
+  function migrate(currentVersion: number) {
+    switch (currentVersion) {
+      case 1:
+        /* Migrate from url to targets */
+        if (deprecated_Url.length > 0) {
+          let target = targetFactory.fromDeprecatedUrl(deprecated_Url)
+          setTarget(target)
+          set_deprecatedUrl('')
+        }
+      case 2:
+        /* Migrate to new size format with outerPadding property */
+        size
+          ? setSize(Migration.getClosestSize(size.fontSize, Sizes.getAllSizes()))
+          : setSize(Sizes.getDefaultSize())
+        setVersion(Migration.LATEST_VERSION)
+        console.log(`Successfully migrated to version ${Migration.LATEST_VERSION}`)
+      case Migration.LATEST_VERSION:
+    }
+  }
+
+  function showSettingsUi(): Promise<void> {
+    return new Promise<void>(() => {
+      showUI(
+        {
+          title: WINDOW_TITLE,
+          height: HEIGHT,
+          width: WIDTH
+        },
+        {
+          label: label,
+          url: target.url
+        }
+      )
+    })
   }
 
   return (
