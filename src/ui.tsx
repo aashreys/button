@@ -88,7 +88,7 @@ function Plugin(props:
   return (
     <Container space="small">
 
-      <VerticalSpace space="large" />
+      <VerticalSpace space="small" />
 
       <div style={'display: flex; width: 100%;'}>
 
@@ -127,15 +127,9 @@ function Plugin(props:
           default-group="search" />
       </div>
 
-      <VerticalSpace space="extraLarge" />
+      <VerticalSpace space="large" />
 
       <Text style={'font-weight: bold;'}>Open a webpage</Text>
-
-      <VerticalSpace space="small" />
-
-      <Text style={'color: var(--figma-color-text-secondary)'}>
-        Viewers and editors can click this button to open a webpage.
-      </Text>
 
       <VerticalSpace space="small" />
 
@@ -150,22 +144,22 @@ function Plugin(props:
         }}
         variant="border" />
 
-      <VerticalSpace space="extraLarge" />
-
-      <Text style={'font-weight: bold;'}>Or navigate this file</Text>
-
       <VerticalSpace space="small" />
 
       <Text style={'color: var(--figma-color-text-secondary)'}>
-        Only editors can click this button to navigate this file.
-      </Text>
+        Users with view or edit permissions can open a webpage.
+      </Text>      
+
+      <VerticalSpace space="large" />
+
+      <Text style={'font-weight: bold;'}>Or navigate this file</Text>
 
       <VerticalSpace space="small" />
 
       <Columns space="extraSmall">
 
         <Button
-          secondary={!enableNodeButton}
+          disabled={!enableNodeButton}
           fullWidth
           onClick={() => emit(EVENT_SELECTION_SET)}>
           {'To Selection'}
@@ -178,6 +172,12 @@ function Plugin(props:
         </Button>
 
       </Columns>
+
+      <VerticalSpace space="small" />
+
+      <Text style={'color: var(--figma-color-text-secondary)'}>
+        Only users with edit permissions can navigate this file.
+      </Text>
 
       <VerticalSpace space="large" />
 
