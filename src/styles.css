@@ -9,11 +9,10 @@ unicode-emoji-picker {
   /* --max-emoji-column: 4; */
   /* --min-emoji-row: 2; */
   /* --max-emoji-row: 4; */
-
-    --min-width: 1em;
-      --min-height: 1em;
-      --max-width: 236px;
-      --max-height: 178px;
+  --min-width: 1em;
+  --min-height: 1em;
+  --max-width: 236px;
+  --max-height: 168px;
 
   /* Global */
   --outer-padding: 8px;
@@ -34,7 +33,7 @@ unicode-emoji-picker {
   --filter-active-marker-border-color: #aaa;
   --filter-padding: 0.6em;
   --filter-gap: 0.4em;
-  --filter-size: 1.2em;
+  --filter-size: 1.4em;
 
   /* Content's viewport */
   --content-scrollbar-width: 12px;
@@ -44,11 +43,11 @@ unicode-emoji-picker {
   /* Title/search bar */
   --title-bar-fill-color: rgba(255, 255, 255, 0.95);
   --title-bar-height: 3em;
-  --title-bar-horizontal-padding: 1.1em;
-  --title-bar-font-size: 1em;
-  --search-input-font-size: 1em;
-  --search-input-line-height: 1.2em;
-  --search-input-padding: 0.35em 0.4em 0.55em;
+  --title-bar-horizontal-padding: 1em;
+  --title-bar-font-size: 0.9em;
+  --search-input-font-size: 0.85em;
+  --search-input-line-height: 1em;
+  --search-input-padding: 0.3em 0em 0.3em;
   --search-input-border-width: 0 0 1px 0;
   --search-input-border-color: #e4e4e4;
   --search-input-border-color-hover: #222;
@@ -61,7 +60,7 @@ unicode-emoji-picker {
   --emoji-border-color-hover: #d7d7d7;
   --emoji-border-radius: 8px;
   --emoji-gap: 0.1em;
-  --emoji-size: 1.8em;
+  --emoji-size: 2em;
   --emoji-font-size: 1.5em;
 
   /* Variations panel */

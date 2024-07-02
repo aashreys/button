@@ -19,6 +19,6 @@ export const ERROR_EMPTY_NODES = 'Nodes array cannot be empty'
 
 export const WINDOW_TITLE = 'Edit Button'
 export const WIDTH = 260
-export const HEIGHT = 280
+export const HEIGHT = 268
 
 export const NAV_DURATION = 200

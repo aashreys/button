@@ -127,7 +127,7 @@ function Plugin(props:
           default-group="search" />
       </div>
 
-      <VerticalSpace space="large" />
+      <VerticalSpace space="medium" />
 
       <Text style={'font-weight: bold;'}>Open a webpage</Text>
 
@@ -178,8 +178,6 @@ function Plugin(props:
       <Text style={'color: var(--figma-color-text-secondary)'}>
         Only users with edit permissions to this file can navigate.
       </Text>
-
-      <VerticalSpace space="large" />
 
     </Container>
    
