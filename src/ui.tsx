@@ -147,7 +147,7 @@ function Plugin(props:
       <VerticalSpace space="small" />
 
       <Text style={'color: var(--figma-color-text-secondary)'}>
-        Users with view or edit permissions to this file can open a webpage.
+        Anyone with view or edit permissions to this file can click this button to open a webpage.
       </Text>      
 
       <VerticalSpace space="large" />
@@ -176,7 +176,7 @@ function Plugin(props:
       <VerticalSpace space="small" />
 
       <Text style={'color: var(--figma-color-text-secondary)'}>
-        Only users with edit permissions to this file can navigate.
+        Only people with edit permissions to this file can click this button to navigate.
       </Text>
 
     </Container>
