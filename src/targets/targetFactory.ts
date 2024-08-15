@@ -6,6 +6,7 @@ import { PageTarget } from "./PageTarget";
 import { WebTarget } from "./WebTarget";
 import { EmptyTarget } from "./EmptyTarget";
 import { isOnSamePage } from "../utils";
+import { JiraTarget } from "./JIraTarget";
 
 export class TargetResolver {
 
@@ -16,6 +17,7 @@ export class TargetResolver {
 
     if (url.length > 0) {
       if (!url.includes(':')) url = 'https://' + url.toLowerCase()
+      if (url.includes('jira.')) return new JiraTarget(url)
       return new WebTarget(url)
     }
     else {

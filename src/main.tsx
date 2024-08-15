@@ -12,7 +12,6 @@ import { EmptyTarget } from "./targets/EmptyTarget"
 import { Navigator } from './targets/navigator'
 import { SETTINGS_ICON } from './ui_icons/settings_icon'
 import { Migration } from './migration'
-import { JIRA_ICON } from './app_icons/jira'
 
 export default function () {
   figma.skipInvisibleInstanceChildren = true
@@ -110,7 +109,12 @@ function Button() {
           if (newTarget.url !== target.url) {
             /* Only update the target if it is 
             different from the current target */
+            console.log('Setting URL target: ' + newTarget.url)
             setTarget(newTarget)
+            if (newTarget.theme) {
+              console.log('setting target theme: ' + newTarget.theme)
+              setTheme(newTarget.theme)
+            }
             emit(EVENT_URL_UPDATED, { url: newTarget.url })
             notify(newTarget.message)
           }
@@ -269,11 +273,13 @@ function Button() {
         spacing={size.iconSpacing}
         onClick={handleClick}
       >
-        <SVG
-        src={JIRA_ICON}
-        height={size.iconSize}
-        width={size.iconSize}
-        />
+        {target.icon && 
+          <SVG
+          src={target.icon}
+          height={size.iconSize}
+          width={size.iconSize}
+          />
+        }
         <Text
           name="Label"
           fill={theme.textColor}

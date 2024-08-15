@@ -1,3 +1,5 @@
+import { Theme } from "../themes"
+
 export enum TargetType {
   EMPTY, WEB, NODE, PAGE, VIEW
 }
@@ -11,5 +13,9 @@ export interface Target {
   readonly message: string
 
   readonly label: string
+
+  readonly icon?: string
+
+  readonly theme?: Theme
 
 }
