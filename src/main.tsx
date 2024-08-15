@@ -1,7 +1,7 @@
 /** @jsx figma.widget.h */
 
 const { widget } = figma
-const { AutoLayout, Text, useSyncedState, usePropertyMenu, useStickable, useEffect, useWidgetNodeId, waitForTask } = widget
+const { AutoLayout, Text, SVG, useSyncedState, usePropertyMenu, useStickable, useEffect, useWidgetNodeId, waitForTask } = widget
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
 import { emit, on, showUI } from '@create-figma-plugin/utilities'
@@ -10,8 +10,9 @@ import { TargetResolver as TargetFactory } from './targets/targetFactory'
 import { Target, TargetType } from './targets/target'
 import { EmptyTarget } from "./targets/EmptyTarget"
 import { Navigator } from './targets/navigator'
-import { SETTINGS_ICON } from './icons/settings_icon'
+import { SETTINGS_ICON } from './ui_icons/settings_icon'
 import { Migration } from './migration'
+import { JIRA_ICON } from './app_icons/jira'
 
 export default function () {
   figma.skipInvisibleInstanceChildren = true
@@ -240,7 +241,7 @@ function Button() {
 
   return (
     <AutoLayout
-      name="Button Container"
+      name="Widget"
       padding={{ 
         top: size.outerPadding,
         bottom: size.outerPadding + size.shadowDepth,
@@ -265,8 +266,14 @@ function Button() {
           vertical: size.verticalPadding,
           horizontal: size.horizontalPadding,
         }}
+        spacing={size.iconSpacing}
         onClick={handleClick}
       >
+        <SVG
+        src={JIRA_ICON}
+        height={size.iconSize}
+        width={size.iconSize}
+        />
         <Text
           name="Label"
           fill={theme.textColor}

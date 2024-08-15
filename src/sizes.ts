@@ -2,6 +2,8 @@ export interface Size {
 
   name: string
   fontSize: number
+  iconSize: number
+  iconSpacing: number
   horizontalPadding: number
   verticalPadding: number
   cornerRadius: number
@@ -39,6 +41,8 @@ export module Sizes {
     return {
       name: name,
       fontSize: size,
+      iconSize: Math.ceil(size * 1.2),
+      iconSpacing: Math.ceil(size * 0.4),
       horizontalPadding: size,
       verticalPadding: size / 2,
       cornerRadius: Math.ceil(size / 1.5),
