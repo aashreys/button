@@ -1,1 +1,7 @@
-export const FIGMA_ICON = `<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="1667" height="2500"><style type="text/css">.st0{fill:#0acf83}.st1{fill:#a259ff}.st2{fill:#f24e1e}.st3{fill:#ff7262}.st4{fill:#1abcfe}</style><title>Figma.logo</title><desc>Created using Figma</desc><path id="path0_fill" class="st0" d="M50 300c27.6 0 50-22.4 50-50v-50H50c-27.6 0-50 22.4-50 50s22.4 50 50 50z"/><path id="path1_fill" class="st1" d="M0 150c0-27.6 22.4-50 50-50h50v100H50c-27.6 0-50-22.4-50-50z"/><path id="path1_fill_1_" class="st2" d="M0 50C0 22.4 22.4 0 50 0h50v100H50C22.4 100 0 77.6 0 50z"/><path id="path2_fill" class="st3" d="M100 0h50c27.6 0 50 22.4 50 50s-22.4 50-50 50h-50V0z"/><path id="path3_fill" class="st4" d="M200 150c0 27.6-22.4 50-50 50s-50-22.4-50-50 22.4-50 50-50 50 22.4 50 50z"/></svg>`
+export const FIGMA_ICON = `<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M20.002 60C25.5209 60 30 55.52 30 50V40H20.002C14.4831 40 10.004 44.48 10.004 50C10.004 55.52 14.4831 60 20.002 60Z" fill="#0ACF83"/>
+<path d="M10.004 30C10.004 24.48 14.4831 20 20.002 20H30V40H20.002C14.4831 40 10.004 35.52 10.004 30Z" fill="#A259FF"/>
+<path d="M10.0041 10C10.0041 4.48 14.4832 0 20.0021 0H30.0001V20H20.0021C14.4832 20 10.0041 15.52 10.0041 10Z" fill="#F24E1E"/>
+<path d="M30 0H39.998C45.5169 0 49.996 4.48 49.996 10C49.996 15.52 45.5169 20 39.998 20H30V0Z" fill="#FF7262"/>
+<path d="M49.996 30C49.996 35.52 45.5169 40 39.998 40C34.4791 40 30 35.52 30 30C30 24.48 34.4791 20 39.998 20C45.5169 20 49.996 24.48 49.996 30Z" fill="#1ABCFE"/>
+</svg>`

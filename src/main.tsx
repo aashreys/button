@@ -12,6 +12,7 @@ import { EmptyTarget } from "./targets/EmptyTarget"
 import { Navigator } from './targets/navigator'
 import { SETTINGS_ICON } from './ui_icons/settings_icon'
 import { Migration } from './migration'
+import { WebTarget } from './targets/WebTarget'
 
 export default function () {
   figma.skipInvisibleInstanceChildren = true
@@ -107,14 +108,10 @@ function Button() {
         try {
           let newTarget = targetFactory.fromUrl(data.url)
           if (newTarget.url !== target.url) {
-            /* Only update the target if it is 
-            different from the current target */
+            /* Only update the target if it is different from the current target */
             console.log('Setting URL target: ' + newTarget.url)
             setTarget(newTarget)
-            if (newTarget.theme) {
-              console.log('setting target theme: ' + newTarget.theme)
-              setTheme(newTarget.theme)
-            }
+            if (newTarget.theme) setTheme(newTarget.theme)
             emit(EVENT_URL_UPDATED, { url: newTarget.url })
             notify(newTarget.message)
           }
@@ -222,6 +219,13 @@ function Button() {
           : setSize(Sizes.getDefaultSize())
         setVersion(Migration.LATEST_VERSION)
         console.log(`Successfully migrated to version ${Migration.LATEST_VERSION}`)
+      case 3:
+        /* Migrate to new app based url targets */
+        if (target instanceof WebTarget) {
+          const newTarget = targetFactory.fromUrl(target.url)
+          setTarget(newTarget)
+          if (newTarget.theme) setTheme(newTarget.theme)
+        }
       case Migration.LATEST_VERSION:
     }
   }

@@ -6,7 +6,14 @@ import { PageTarget } from "./PageTarget";
 import { WebTarget } from "./WebTarget";
 import { EmptyTarget } from "./EmptyTarget";
 import { isOnSamePage } from "../utils";
-import { JiraTarget } from "./JIraTarget";
+import { JiraTarget } from "./apps/JIraTarget";
+import { NotionTarget } from "./apps/NotionTarget";
+import { FigmaTarget } from "./apps/FigmaTarget";
+import { SlackTarget } from "./apps/SlackTarget";
+import { GoogleDocsTarget } from "./apps/GoogleDocsTarget";
+import { GoogleSheetsTarget } from "./apps/GoogleSheetsTarget";
+import { GoogleSlidesTarget } from "./apps/GoogleSlidesTarget";
+import { MiroTarget } from "./apps/MiroTarget";
 
 export class TargetResolver {
 
@@ -14,16 +21,21 @@ export class TargetResolver {
   private readonly DEPRECATED_SCHEME_NODE = 'button:navigateTo -> '
 
   public fromUrl(url: string): Target {
-
     if (url.length > 0) {
       if (!url.includes(':')) url = 'https://' + url.toLowerCase()
-      if (url.includes('jira.')) return new JiraTarget(url)
+      if (JiraTarget.isAppLink(url)) return new JiraTarget(url)
+      if (NotionTarget.isAppLink(url)) return new NotionTarget(url)
+      if (FigmaTarget.isAppLink(url)) return new FigmaTarget(url)
+      if (SlackTarget.isAppLink(url)) return new SlackTarget(url)
+      if (GoogleDocsTarget.isAppLink(url)) return new GoogleDocsTarget(url)
+      if (GoogleSlidesTarget.isAppLink(url)) return new GoogleSlidesTarget(url)
+      if (GoogleSheetsTarget.isAppLink(url)) return new GoogleSheetsTarget(url)
+      if (MiroTarget.isAppLink(url)) return new MiroTarget(url)
       return new WebTarget(url)
     }
     else {
       return new EmptyTarget()
     }
-
   }
 
   public async fromDeprecatedUrl(url: string): Promise<Target> {
