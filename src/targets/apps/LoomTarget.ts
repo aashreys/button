@@ -6,7 +6,7 @@ export class LoomTarget implements Target {
 
   readonly type = TargetType.WEB
   readonly icon = LOOM_ICON
-  readonly theme = Themes.FIGJAM_PURPLE
+  readonly theme = Themes.VIOLET
   readonly message: string = 'Click to open link'
   readonly label: string = 'Open Loom'
 
