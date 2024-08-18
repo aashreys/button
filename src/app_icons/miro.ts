@@ -1,11 +1,17 @@
-export const MIRO_ICON = `<svg width="150" height="150" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_2453_868)">
-<path d="M32.5 0H117.5C135.312 0 150 14.6875 150 32.5V117.5C150 135.312 135.312 150 117.5 150H32.5C14.6875 150 0 135.312 0 117.5V32.5C0 14.6875 14.6875 0 32.5 0Z" fill="#FFD02F"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M104.062 18.75H87.5L101.25 42.8125L71.25 18.75H54.6875L69.6875 48.125L38.4375 18.75H21.875L38.4375 56.25L21.875 131.25H38.4375L70 50.9375L54.6875 131.25H71.25L101.562 45.625L87.8125 131.25H104.375L134.375 37.5L104.062 18.75Z" fill="#050038"/>
+export const MIRO_ICON = `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_2475_941)">
+<mask id="mask0_2475_941" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48">
+<path d="M48 0H0V48H48V0Z" fill="white"/>
+</mask>
+<g mask="url(#mask0_2475_941)">
+<path d="M10.4 0H37.6C43.2998 0 48 4.7 48 10.4V37.6C48 43.2998 43.2998 48 37.6 48H10.4C4.7 48 0 43.2998 0 37.6V10.4C0 4.7 4.7 0 10.4 0Z" fill="#FFD02F"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M33.2998 6H28L32.4 13.7L22.8 6H17.5L22.3 15.4L12.3 6H7L12.3 18L7 42H12.3L22.4 16.3L17.5 42H22.8L32.4998 14.6L28.1 42H33.4L43 12L33.2998 6Z" fill="#050038"/>
+</g>
 </g>
 <defs>
-<clipPath id="clip0_2453_868">
-<rect width="150" height="150" fill="white"/>
+<clipPath id="clip0_2475_941">
+<rect width="48" height="48" fill="white"/>
 </clipPath>
 </defs>
-</svg>`
+</svg>
+`

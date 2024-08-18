@@ -72,7 +72,7 @@ export module Sizes {
     ]
   }
 
-  export function getSizeByName(name: string): Size | undefined {
+  export function findSizeByName(name: string): Size | undefined {
     return Sizes.getAllSizes().find(size => size.name === name) as Size
   }
 
