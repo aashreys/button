@@ -73,7 +73,8 @@ function Button() {
         icon: SETTINGS_ICON
       },
     ],
-    (event) => { 
+    (event) => {
+      beforeWidgetRun()
       if (event.propertyName === 'color') {
         let color = event.propertyValue?.toUpperCase()
         let theme: Theme = Themes.getAllThemes().find(theme => {
@@ -94,12 +95,16 @@ function Button() {
     },
   )
 
-  useEffect(() => {
-    /* Migrate state to latest version, whenever user updates widget */
+  // useEffect(() => {
+  //   /* Migrate state to latest version, whenever user updates widget */
+  //   waitForTask(migrate(version))
+  //   addListeners()
+  //   return () => removeListeners()
+  // })
+
+  function beforeWidgetRun() {
     waitForTask(migrate(version))
-    addListeners()
-    return () => removeListeners()
-  })
+  }
 
   function addListeners() {
     listeners.push(
@@ -176,6 +181,7 @@ function Button() {
 
   function handleClick(): Promise<void> {
     return new Promise<void>((resolve) => {
+      beforeWidgetRun()
       navigator.navigateTo(target)
         .then(() => {
           figma.closePlugin()
@@ -233,6 +239,8 @@ function Button() {
   function showSettingsUi(): Promise<void> {
     /* Don't resolve this promise so Setting UI stays open */
     return new Promise<void>(() => {
+      removeListeners()
+      addListeners()
       showUI(
         {
           title: WINDOW_TITLE,
