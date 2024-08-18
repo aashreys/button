@@ -220,7 +220,7 @@ function Button() {
         console.log(`Successfully migrated to version ${Migration.LATEST_VERSION}`)
       case 3:
         /* Migrate to new app based url targets */
-        if (target instanceof WebTarget) {
+        if (target.type === TargetType.WEB) {
           const newTarget = targetFactory.fromUrl(target.url)
           setTarget(newTarget)
           if (newTarget.theme) setTheme(newTarget.theme)
