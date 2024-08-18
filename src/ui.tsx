@@ -137,6 +137,9 @@ function Plugin(props:
         {...useInitialFocus()}
         placeholder='Type or paste a link'
         value={url}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') emit(EVENT_URL_UPDATED, { url })
+        }}
         onValueInput={setUrl}
         validateOnBlur={(url) => {
           emit(EVENT_URL_UPDATED, { url })
