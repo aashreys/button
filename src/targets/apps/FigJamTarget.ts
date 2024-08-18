@@ -1,14 +1,14 @@
-import { MIRO_ICON } from "../../app_icons/miro";
+import { FIGJAM_ICON } from "../../app_icons/figjam";
 import { Themes } from "../../themes";
 import { Target, TargetType } from "../target";
 
-export class MiroTarget implements Target {
+export class FigJamTarget implements Target {
 
   readonly type = TargetType.WEB
-  readonly icon = MIRO_ICON
-  readonly theme = Themes.YELLOW
+  readonly icon = FIGJAM_ICON
+  readonly theme = Themes.FIGJAM_PURPLE
   readonly message: string = 'Click to open link'
-  readonly label: string = 'Open Miro Board ↗️'
+  readonly label: string = 'Open FigJam Board ↗️'
 
   readonly url: string;
 

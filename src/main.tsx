@@ -279,6 +279,7 @@ function Button() {
       >
         {target.icon && 
           <SVG
+          name="Icon"
           src={target.icon}
           height={size.iconSize}
           width={size.iconSize}

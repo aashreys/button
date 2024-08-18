@@ -8,29 +8,48 @@ import { EmptyTarget } from "./EmptyTarget";
 import { isOnSamePage } from "../utils";
 import { JiraTarget } from "./apps/JIraTarget";
 import { NotionTarget } from "./apps/NotionTarget";
-import { FigmaTarget } from "./apps/FigmaTarget";
+import { FigmaFileTarget } from "./apps/FigmaFileTarget";
 import { SlackTarget } from "./apps/SlackTarget";
 import { GoogleDocsTarget } from "./apps/GoogleDocsTarget";
 import { GoogleSheetsTarget } from "./apps/GoogleSheetsTarget";
 import { GoogleSlidesTarget } from "./apps/GoogleSlidesTarget";
 import { MiroTarget } from "./apps/MiroTarget";
+import { FigmaFileProvider } from "./apps/providers/FigmaFileProvider";
+import { GoogleDocsProvider } from "./apps/providers/GoogleDocsProvider";
+import { AppTargetProvider } from "./apps/providers/AppTargetProvider";
+import { GoogleSheetsProvider } from "./apps/providers/GoogleSheetsProvider";
+import { GoogleSlidesProvider } from "./apps/providers/GoogleSlidesProvider";
+import { JiraProvider } from "./apps/providers/JiraProvider";
+import { SlackProvider } from "./apps/providers/SlackProvider";
+import { NotionProvider } from "./apps/providers/NotionProvider";
+import { MiroProvider } from "./apps/providers/MiroProvider";
+import { FigJamProvider } from "./apps/providers/FigJamProvider";
+import { FigmaSlidesProvider } from "./apps/providers/FigmaSlidesProvider";
 
 export class TargetResolver {
 
   // DEPRECATED, remove when Figma supports updates to inserted widgets
   private readonly DEPRECATED_SCHEME_NODE = 'button:navigateTo -> '
 
+  private readonly appTargetProviders: AppTargetProvider[] = [
+    new FigmaFileProvider(),
+    new FigJamProvider(),
+    new FigmaSlidesProvider(),
+    new GoogleDocsProvider(),
+    new GoogleSheetsProvider(),
+    new GoogleSlidesProvider(),
+    new JiraProvider(),
+    new MiroProvider(),
+    new NotionProvider(),
+    new SlackProvider(),
+  ]
+
   public fromUrl(url: string): Target {
     if (url.length > 0) {
       if (!url.includes(':')) url = 'https://' + url.toLowerCase()
-      if (JiraTarget.isAppLink(url)) return new JiraTarget(url)
-      if (NotionTarget.isAppLink(url)) return new NotionTarget(url)
-      if (FigmaTarget.isAppLink(url)) return new FigmaTarget(url)
-      if (SlackTarget.isAppLink(url)) return new SlackTarget(url)
-      if (GoogleDocsTarget.isAppLink(url)) return new GoogleDocsTarget(url)
-      if (GoogleSlidesTarget.isAppLink(url)) return new GoogleSlidesTarget(url)
-      if (GoogleSheetsTarget.isAppLink(url)) return new GoogleSheetsTarget(url)
-      if (MiroTarget.isAppLink(url)) return new MiroTarget(url)
+      for (let provider of this.appTargetProviders) {
+        if (provider.isMatch(url)) return provider.create(url)
+      }
       return new WebTarget(url)
     }
     else {

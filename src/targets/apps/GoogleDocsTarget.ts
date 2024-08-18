@@ -8,16 +8,12 @@ export class GoogleDocsTarget implements Target {
   readonly icon = GOOGLE_DOCS_ICON
   readonly theme = Themes.FIGMA_BLUE
   readonly message: string = 'Click to open link'
-  readonly label: string = 'Open link'
+  readonly label: string = 'Open Google Doc ↗️'
 
   readonly url: string;
 
   constructor(url: string) {
     this.url = url
-  }
-
-  static isAppLink(url: string) {
-    return url.includes('docs.google.com')
   }
 
 }

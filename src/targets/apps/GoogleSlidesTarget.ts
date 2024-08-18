@@ -8,16 +8,12 @@ export class GoogleSlidesTarget implements Target {
   readonly icon = GOOGLE_SLIDES_ICON
   readonly theme = Themes.YELLOW
   readonly message: string = 'Click to open link'
-  readonly label: string = 'Open link'
+  readonly label: string = 'Open Google Slides ↗️'
 
   readonly url: string;
 
   constructor(url: string) {
     this.url = url
-  }
-
-  static isAppLink(url: string) {
-    return url.includes('slides.google.com')
   }
 
 }

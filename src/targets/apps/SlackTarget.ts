@@ -8,16 +8,12 @@ export class SlackTarget implements Target {
   readonly icon = SLACK_ICON
   readonly theme = Themes.GREEN
   readonly message: string = 'Click to open link'
-  readonly label: string = 'Open Slack Thread'
+  readonly label: string = 'Open Slack Thread ↗️'
 
   readonly url: string;
 
   constructor(url: string) {
     this.url = url
-  }
-
-  static isAppLink(url: string) {
-    return url.includes('slack.com')
   }
 
 }

@@ -8,16 +8,12 @@ export class NotionTarget implements Target {
   readonly icon = NOTION_ICON
   readonly theme = Themes.BLACK
   readonly message: string = 'Click to open link'
-  readonly label: string = 'Open link'
+  readonly label: string = 'Open Notion Doc ↗️'
 
   readonly url: string;
 
   constructor(url: string) {
     this.url = url
-  }
-
-  static isAppLink(url: string) {
-    return url.includes('notion.so')
   }
 
 }

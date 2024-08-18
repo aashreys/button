@@ -20,11 +20,7 @@ export class JiraTarget implements Target {
     this.url = url;
     this.message = 'Click to open link';
     const ticketNumber = url.match(this.ticketRegex)
-    this.label = (ticketNumber ? ticketNumber.toString() : 'Open JIRA')
-  }
-
-  static isAppLink(url: string) {
-    return url.includes('jira')
+    this.label = (ticketNumber ? ticketNumber.toString() : 'Open JIRA') + ' ↗️'
   }
 
 }
