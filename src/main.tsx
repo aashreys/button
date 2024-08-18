@@ -3,7 +3,7 @@
 const { widget } = figma
 const { AutoLayout, Text, SVG, useSyncedState, usePropertyMenu, useStickable, useWidgetNodeId, waitForTask } = widget
 import { Theme, Themes } from './themes'
-import { Size, Sizes } from './sizes'
+import { Sizes } from './sizes'
 import { emit, on, showUI } from '@create-figma-plugin/utilities'
 import { EVENT_LABEL_UPDATED, EVENT_URL_UPDATED, EVENT_SELECTION_SET, EVENT_VIEW_SELECTED, EVENT_ENABLE_NODE_BUTTON, WINDOW_TITLE, MSG_SELECT_LAYERS, HEIGHT, WIDTH } from './constants'
 import { TargetResolver as TargetFactory } from './targets/targetFactory'
@@ -170,8 +170,8 @@ function Button() {
   }
 
   function handleClick(): Promise<void> {
+    beforeWidgetRun()
     return new Promise<void>((resolve) => {
-      beforeWidgetRun()
       navigator.navigateTo(target)
         .then(() => {
           figma.closePlugin()
@@ -214,8 +214,11 @@ function Button() {
           ? setSize(Migration.getClosestSize(size.fontSize, Sizes.getAllSizes()))
           : setSize(Sizes.getDefaultSize())
         setVersion(Migration.LATEST_VERSION)
-        console.log(`Successfully migrated to version ${Migration.LATEST_VERSION}`)
       case 3:
+        /* Migrate size to support new icon.size properties introduced in version 3 */
+        let newSize = Sizes.findSizeByName(size.name as string)
+        if (!newSize) newSize = Sizes.getDefaultSize()
+        setSize(size)
         /* Migrate to new app based url targets */
         if (target.type === TargetType.WEB) {
           const newTarget = targetFactory.fromUrl(target.url)
@@ -223,11 +226,9 @@ function Button() {
           if (newTarget.theme) setTheme(newTarget.theme)
         }
       case 4:
-        /* Migrate size to support new icon.size properties introduced in version 3 */
-        let newSize = Sizes.findSizeByName(size.name as string)
-        if (!newSize) newSize = Sizes.getDefaultSize()
-        setSize(size)
+       /* Do nothing for this migration version since the changes are compatible with version 3 */
       case Migration.LATEST_VERSION:
+        console.log(`Successfully migrated to version ${Migration.LATEST_VERSION}`)
     }
   }
 
