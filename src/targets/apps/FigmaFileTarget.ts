@@ -8,7 +8,7 @@ export class FigmaFileTarget implements Target {
   readonly icon = FIGMA_ICON
   readonly theme = Themes.FIGMA_BLUE
   readonly message: string = 'Click to open link'
-  readonly label: string = 'Open Figma File ↗️'
+  readonly label: string = 'Open Figma File'
 
   readonly url: string;
 

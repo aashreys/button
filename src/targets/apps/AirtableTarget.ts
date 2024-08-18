@@ -1,14 +1,14 @@
-import { GOOGLE_SLIDES_ICON } from "../../app_icons/google_slides"
+import { AIRTABLE_ICON } from "../../app_icons/airtable"
 import { Themes } from "../../themes"
 import { Target, TargetType } from "../target"
 
-export class GoogleSlidesTarget implements Target {
+export class AirtableTarget implements Target {
 
   readonly type = TargetType.WEB
-  readonly icon = GOOGLE_SLIDES_ICON
+  readonly icon = AIRTABLE_ICON
   readonly theme = Themes.YELLOW
   readonly message: string = 'Click to open link'
-  readonly label: string = 'Open Google Slides'
+  readonly label: string = 'Open Airtable'
 
   readonly url: string;
 

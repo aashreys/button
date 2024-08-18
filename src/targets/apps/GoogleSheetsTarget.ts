@@ -9,7 +9,7 @@ export class GoogleSheetsTarget implements Target {
   readonly icon = GOOGLE_SHEETS_ICON
   readonly theme = Themes.GREEN
   readonly message: string = 'Click to open link'
-  readonly label: string = 'Open Google Sheets ↗️'
+  readonly label: string = 'Open Google Sheets'
 
   readonly url: string;
 

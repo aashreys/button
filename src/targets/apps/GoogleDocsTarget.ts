@@ -8,7 +8,7 @@ export class GoogleDocsTarget implements Target {
   readonly icon = GOOGLE_DOCS_ICON
   readonly theme = Themes.FIGMA_BLUE
   readonly message: string = 'Click to open link'
-  readonly label: string = 'Open Google Doc ↗️'
+  readonly label: string = 'Open Google Doc'
 
   readonly url: string;
 

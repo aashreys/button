@@ -8,7 +8,7 @@ export class FigJamTarget implements Target {
   readonly icon = FIGJAM_ICON
   readonly theme = Themes.FIGJAM_PURPLE
   readonly message: string = 'Click to open link'
-  readonly label: string = 'Open FigJam Board ↗️'
+  readonly label: string = 'Open FigJam'
 
   readonly url: string;
 

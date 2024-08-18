@@ -25,6 +25,8 @@ import { NotionProvider } from "./apps/providers/NotionProvider";
 import { MiroProvider } from "./apps/providers/MiroProvider";
 import { FigJamProvider } from "./apps/providers/FigJamProvider";
 import { FigmaSlidesProvider } from "./apps/providers/FigmaSlidesProvider";
+import { ConfluenceProvider } from "./apps/providers/ConfluenceProvider";
+import { AirtableProvider } from "./apps/providers/AirtableProvider";
 
 export class TargetResolver {
 
@@ -39,9 +41,11 @@ export class TargetResolver {
     new GoogleSheetsProvider(),
     new GoogleSlidesProvider(),
     new JiraProvider(),
+    new ConfluenceProvider(),
     new MiroProvider(),
     new NotionProvider(),
     new SlackProvider(),
+    new AirtableProvider(),
   ]
 
   public fromUrl(url: string): Target {

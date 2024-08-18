@@ -95,13 +95,6 @@ function Button() {
     },
   )
 
-  // useEffect(() => {
-  //   /* Migrate state to latest version, whenever user updates widget */
-  //   waitForTask(migrate(version))
-  //   addListeners()
-  //   return () => removeListeners()
-  // })
-
   function beforeWidgetRun() {
     waitForTask(migrate(version))
   }

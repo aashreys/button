@@ -8,7 +8,7 @@ export class MiroTarget implements Target {
   readonly icon = MIRO_ICON
   readonly theme = Themes.YELLOW
   readonly message: string = 'Click to open link'
-  readonly label: string = 'Open Miro Board ↗️'
+  readonly label: string = 'Open Miro'
 
   readonly url: string;
 

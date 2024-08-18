@@ -8,7 +8,7 @@ export class NotionTarget implements Target {
   readonly icon = NOTION_ICON
   readonly theme = Themes.BLACK
   readonly message: string = 'Click to open link'
-  readonly label: string = 'Open Notion Doc ↗️'
+  readonly label: string = 'Open Notion'
 
   readonly url: string;
 

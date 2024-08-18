@@ -8,7 +8,7 @@ export class FigmaSlidesTarget implements Target {
   readonly icon = FIGMA_SLIDES_ICON
   readonly theme = Themes.RED
   readonly message: string = 'Click to open link'
-  readonly label: string = 'Open Figma Slides ↗️'
+  readonly label: string = 'Open Figma Slides'
 
   readonly url: string;
 
