@@ -30,6 +30,7 @@ import { AirtableProvider } from "./apps/providers/AirtableProvider";
 import { GoogleDriveProvider } from "./apps/providers/GoogleDriveProvider";
 import { LatticeProvider } from "./apps/providers/LatticeProvider";
 import { ProductboardProvider } from "./apps/providers/ProductboardProvider";
+import { LucidProvider } from "./apps/providers/LucidchartProvider";
 
 export class TargetResolver {
 
@@ -52,6 +53,7 @@ export class TargetResolver {
     new AirtableProvider(),
     new LatticeProvider(),
     new ProductboardProvider(),
+    new LucidProvider(),
   ]
 
   public fromUrl(url: string): Target {
