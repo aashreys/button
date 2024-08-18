@@ -1,7 +1,7 @@
 /** @jsx figma.widget.h */
 
 const { widget } = figma
-const { AutoLayout, Text, SVG, useSyncedState, usePropertyMenu, useStickable, useEffect, useWidgetNodeId, waitForTask } = widget
+const { AutoLayout, Text, SVG, useSyncedState, usePropertyMenu, useStickable, useWidgetNodeId, waitForTask } = widget
 import { Theme, Themes } from './themes'
 import { Size, Sizes } from './sizes'
 import { emit, on, showUI } from '@create-figma-plugin/utilities'

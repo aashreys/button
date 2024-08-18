@@ -27,6 +27,7 @@ import { FigJamProvider } from "./apps/providers/FigJamProvider";
 import { FigmaSlidesProvider } from "./apps/providers/FigmaSlidesProvider";
 import { ConfluenceProvider } from "./apps/providers/ConfluenceProvider";
 import { AirtableProvider } from "./apps/providers/AirtableProvider";
+import { GoogleDriveProvider } from "./apps/providers/GoogleDriveProvider";
 
 export class TargetResolver {
 
@@ -40,6 +41,7 @@ export class TargetResolver {
     new GoogleDocsProvider(),
     new GoogleSheetsProvider(),
     new GoogleSlidesProvider(),
+    new GoogleDriveProvider(),
     new JiraProvider(),
     new ConfluenceProvider(),
     new MiroProvider(),
