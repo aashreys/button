@@ -28,6 +28,8 @@ import { FigmaSlidesProvider } from "./apps/providers/FigmaSlidesProvider";
 import { ConfluenceProvider } from "./apps/providers/ConfluenceProvider";
 import { AirtableProvider } from "./apps/providers/AirtableProvider";
 import { GoogleDriveProvider } from "./apps/providers/GoogleDriveProvider";
+import { LatticeProvider } from "./apps/providers/LatticeProvider";
+import { ProductboardProvider } from "./apps/providers/ProductboardProvider";
 
 export class TargetResolver {
 
@@ -48,6 +50,8 @@ export class TargetResolver {
     new NotionProvider(),
     new SlackProvider(),
     new AirtableProvider(),
+    new LatticeProvider(),
+    new ProductboardProvider(),
   ]
 
   public fromUrl(url: string): Target {
