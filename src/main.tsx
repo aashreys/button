@@ -12,7 +12,6 @@ import { EmptyTarget } from "./targets/EmptyTarget"
 import { Navigator } from './targets/navigator'
 import { SETTINGS_ICON } from './ui_icons/settings_icon'
 import { Migration } from './migration'
-import { WebTarget } from './targets/WebTarget'
 
 export default function () {
   figma.skipInvisibleInstanceChildren = true
@@ -83,9 +82,7 @@ function Button() {
         setTheme(theme)
       }
       if (event.propertyName === 'size') {
-        let size: Size = Sizes.getAllSizes().find(
-          size => size.name === event.propertyValue
-        ) as Size
+        let size = Sizes.findSizeByName(event.propertyValue as string)
         if (!size) size = Sizes.getDefaultSize()
         setSize(size)
       }
@@ -225,6 +222,11 @@ function Button() {
           setTarget(newTarget)
           if (newTarget.theme) setTheme(newTarget.theme)
         }
+      case 4:
+        /* Migrate size to support new icon.size properties introduced in version 3 */
+        let newSize = Sizes.findSizeByName(size.name as string)
+        if (!newSize) newSize = Sizes.getDefaultSize()
+        setSize(size)
       case Migration.LATEST_VERSION:
     }
   }
