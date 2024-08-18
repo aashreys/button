@@ -23,6 +23,10 @@ import { GoogleDriveProvider } from "./apps/providers/GoogleDriveProvider";
 import { LatticeProvider } from "./apps/providers/LatticeProvider";
 import { ProductboardProvider } from "./apps/providers/ProductboardProvider";
 import { LucidProvider } from "./apps/providers/LucidchartProvider";
+import { CampsiteProvider } from "./apps/providers/CampsiteProvider";
+import { YouTubeProvider } from "./apps/providers/YouTubeProvider";
+import { LoomProvider } from "./apps/providers/LoomProvider";
+import { VimeoProvider } from "./apps/providers/VimeoProvider";
 
 export class TargetResolver {
 
@@ -37,6 +41,9 @@ export class TargetResolver {
     new GoogleSheetsProvider(),
     new GoogleSlidesProvider(),
     new GoogleDriveProvider(),
+    new YouTubeProvider(),
+    new LoomProvider(),
+    new VimeoProvider(),
     new JiraProvider(),
     new ConfluenceProvider(),
     new MiroProvider(),
@@ -46,6 +53,7 @@ export class TargetResolver {
     new LatticeProvider(),
     new ProductboardProvider(),
     new LucidProvider(),
+    new CampsiteProvider(),
   ]
 
   public fromUrl(url: string): Target {
