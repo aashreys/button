@@ -214,7 +214,7 @@ function Button() {
         /* Migrate size to support new icon.size properties introduced in version 3 */
         let newSize = Sizes.findSizeByName(size.name as string)
         if (!newSize) newSize = Sizes.getDefaultSize()
-        setSize(size)
+        setSize(newSize)
         /* Migrate to new app based url targets */
         if (target.type === TargetType.WEB) {
           const newTarget = targetFactory.fromUrl(target.url)
