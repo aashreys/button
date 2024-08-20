@@ -1,4 +1,4 @@
-import { Target } from "../../target"
+import { Target } from "../target"
 
 export interface AppTargetProvider {
 

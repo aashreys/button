@@ -1,6 +1,6 @@
-import { FIGMA_PROTOTYPE_ICON } from "../../../app_icons/figma_prototype";
-import { Themes } from "../../../themes";
-import { Target, TargetType } from "../../target";
+import { FIGMA_PROTOTYPE_ICON } from "../../app_icons/figma_prototype";
+import { Themes } from "../../themes";
+import { Target, TargetType } from "../target";
 import { AppTargetProvider } from "./AppTargetProvider";
 
 export class FigmaPrototypeProvider implements AppTargetProvider {
