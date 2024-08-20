@@ -27,6 +27,7 @@ import { CampsiteProvider } from "./apps/providers/CampsiteProvider";
 import { YouTubeProvider } from "./apps/providers/YouTubeProvider";
 import { LoomProvider } from "./apps/providers/LoomProvider";
 import { VimeoProvider } from "./apps/providers/VimeoProvider";
+import { FigmaPrototypeProvider } from "./apps/providers/FigmaPrototypeProvider";
 
 export class TargetResolver {
 
@@ -37,6 +38,7 @@ export class TargetResolver {
     new FigmaFileProvider(),
     new FigJamProvider(),
     new FigmaSlidesProvider(),
+    new FigmaPrototypeProvider(),
     new GoogleDocsProvider(),
     new GoogleSheetsProvider(),
     new GoogleSlidesProvider(),
