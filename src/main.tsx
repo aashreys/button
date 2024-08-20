@@ -210,8 +210,11 @@ function Button() {
           ? setSize(Migration.getClosestSize(size.fontSize, Sizes.getAllSizes()))
           : setSize(Sizes.getDefaultSize())
         setVersion(Migration.LATEST_VERSION)
-      case 3:
-        /* Migrate size to support new icon.size properties introduced in version 3 */
+      case 3: 
+      case 4:
+       /* Do nothing for versions 3 and 4 since there is no change in the state schema between those and version 5. Versions 3 and 4 were necessary to work out the kinks in testing the new app based url targets based approach to theming. With version 5 all buttons will be on the latest state schema  */
+      case 5:
+        /* Migrate size to support new icon.size properties */
         let newSize = Sizes.findSizeByName(size.name as string)
         if (!newSize) newSize = Sizes.getDefaultSize()
         setSize(newSize)
@@ -221,8 +224,6 @@ function Button() {
           setTarget(newTarget)
           if (newTarget.theme) setTheme(newTarget.theme)
         }
-      case 4:
-       /* Do nothing for this migration version since the changes are compatible with version 3 */
       case Migration.LATEST_VERSION:
         console.log(`Successfully migrated to version ${Migration.LATEST_VERSION}`)
     }

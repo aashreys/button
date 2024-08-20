@@ -2,7 +2,7 @@ import { Size, Sizes } from "./sizes"
 
 export class Migration {
 
-  static readonly LATEST_VERSION = 5
+  static readonly LATEST_VERSION = 6
 
   static getClosestSize(fontSize: number, sizes: Size[]): Size {
     let diff = Infinity
