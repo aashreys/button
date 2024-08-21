@@ -100,16 +100,18 @@ function Button() {
     listeners.push(
       on(EVENT_LABEL_UPDATED, (data) => { setLabel(data.label) }),
       on(EVENT_URL_UPDATED, (data) => {
-        try {
-          let newTarget = targetFactory.fromUrl(data.url)
-          setTarget(newTarget)
-          if (newTarget.theme) setTheme(newTarget.theme)
-          emit(EVENT_URL_UPDATED, { url: newTarget.url })
-          notify(newTarget.message)
-        }
-        catch (e: any) {
-          emit(EVENT_URL_UPDATED, { url: target.url })
-          notify(e.message, true)
+        if (target.url !== data.url) {
+          try {
+            let newTarget = targetFactory.fromUrl(data.url)
+            setTarget(newTarget)
+            if (newTarget.theme) setTheme(newTarget.theme)
+            emit(EVENT_URL_UPDATED, { url: newTarget.url })
+            notify(newTarget.message)
+          }
+          catch (e: any) {
+            emit(EVENT_URL_UPDATED, { url: target.url })
+            notify(e.message, true)
+          }
         }
       }),
       on(EVENT_SELECTION_SET, () => {
