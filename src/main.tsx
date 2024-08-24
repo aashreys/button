@@ -279,15 +279,15 @@ function Button() {
           vertical: size.verticalPadding,
           horizontal: size.horizontalPadding,
         }}
-        spacing={size.iconSpacing}
+        spacing={size.iconSpacing ? size.iconSpacing : 0}
         onClick={handleClick}
       >
         {target.icon && 
           <SVG
           name="Icon"
           src={target.icon}
-          height={size.iconSize}
-          width={size.iconSize}
+          height={size.iconSize ? size.iconSize : 48}
+          width={size.iconSize ? size.iconSize : 48}
           />
         }
         <Text
