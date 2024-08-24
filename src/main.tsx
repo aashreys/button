@@ -100,6 +100,8 @@ function Button() {
     listeners.push(
       on(EVENT_LABEL_UPDATED, (data) => { setLabel(data.label) }),
       on(EVENT_URL_UPDATED, (data) => {
+        console.log('Event: URL Updated')
+        console.log('target.url:', target.url, 'data.url:', data.url)
         if (target.url !== data.url) {
           try {
             let newTarget = targetFactory.fromUrl(data.url)
